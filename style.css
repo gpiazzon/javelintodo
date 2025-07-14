@@ -1,5 +1,15 @@
-body { font-family: sans-serif; margin: 0; padding: 1rem; background: #f9f9f9; }
-header { text-align: center; margin-bottom: 1rem; }
-ul { list-style: none; padding: 0; }
-li { background: #fff; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 0.25rem; display: flex; align-items: center; }
-input[type="checkbox"] { margin-right: 0.5rem; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', sans-serif; background: #f4f4f4; color: #333; }
+.header { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #fff; box-shadow: 0 1px 5px rgba(0,0,0,0.1); }
+.date-title { font-size: 1.25rem; }
+.nav-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+main { padding: 1rem; }
+.task-group { background: #fff; margin-bottom: 1rem; border-radius: .5rem; box-shadow: 0 1px 5px rgba(0,0,0,0.1); }
+.task-group h2 { padding: .75rem 1rem; font-size: 1rem; background: #f1f1f1; border-top-left-radius: .5rem; border-top-right-radius: .5rem; }
+.task-group ul { list-style: none; }
+.task-item { display: flex; align-items: center; padding: .75rem 1rem; border-bottom: 1px solid #eee; transition: opacity .2s; }
+.task-item:last-child { border-bottom: none; }
+.task-item.completed { opacity: 0.6; }
+.task-item input { margin-right: .75rem; width: 1.2rem; height: 1.2rem; }
+.task-item label { flex: 1; display: flex; align-items: center; }
+.task-item label i { margin-right: .5rem; }
