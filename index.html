@@ -82,8 +82,14 @@
                 ul.insertBefore(li,ul.children[i]);
               }
             });
-            const lbl = document.createElement('label'); lbl.htmlFor=id;
-            lbl.innerHTML = `<span class="task-emoji">${settings.emoji}</span> ${task}`;
+
+            const lbl = document.createElement('label');
+            lbl.htmlFor = id;
+            lbl.textContent = task;
+            const icon = document.createElement('i');
+            icon.dataset.lucide = 'circle';
+            lbl.prepend(icon);
+
             li.append(chk,lbl);
             if(chk.checked) li.classList.add('completed');
             ul.appendChild(li);
