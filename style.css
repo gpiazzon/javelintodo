@@ -15,7 +15,11 @@ body {
   color: #fff;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
 }
-.date-title { font-size: 1.25rem; }
+.date-title {
+  font-size: 1.25rem;
+  flex: 1;
+  text-align: center;
+}
 .nav-btn {
   background: none;
   border: none;
