@@ -6,42 +6,68 @@
   <title>Settings - Javelin Checklist</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-  <header class="header">
-    <a href="index.html" class="nav-btn" aria-label="Back"><i data-lucide="chevron-left"></i></a>
-    <h1 class="date-title">Settings</h1>
-  </header>
+  <body>
+    <header class="header">
+      <a href="index.html" class="nav-btn" aria-label="Back"><i data-lucide="chevron-left"></i></a>
+      <h1 class="date-title">Settings</h1>
+    </header>
 
-  <main>
-    <label for="day-select">Choose Day:</label>
-    <select id="day-select">
-      <option value="monday">Monday</option>
-      <option value="tuesday">Tuesday</option>
-      <option value="wednesday">Wednesday</option>
-      <option value="thursday">Thursday</option>
-      <option value="friday">Friday</option>
-      <option value="saturday">Saturday</option>
-      <option value="sunday">Sunday</option>
-    </select>
-    <textarea id="tasks-input" rows="15" style="width:100%;margin-top:1rem;"></textarea>
-    <button id="save-btn" style="margin-top:0.5rem;">Save</button>
-    <p style="font-size:0.8rem;margin-top:0.5rem;">Edit tasks as JSON. Changes apply from today forward.</p>
-  </main>
+    <main>
+      <label for="day-select">Choose Day:</label>
+      <select id="day-select">
+        <option value="monday">Monday</option>
+        <option value="tuesday">Tuesday</option>
+        <option value="wednesday">Wednesday</option>
+        <option value="thursday">Thursday</option>
+        <option value="friday">Friday</option>
+        <option value="saturday">Saturday</option>
+        <option value="sunday">Sunday</option>
+      </select>
+      <label style="display:block;margin-top:0.5rem;" for="accent-input">Accent color:</label>
+      <input type="color" id="accent-input" />
+      <textarea id="tasks-input" rows="15" style="width:100%;margin-top:1rem;"></textarea>
+      <button id="save-btn" style="margin-top:0.5rem;">Save Tasks</button>
+      <p style="font-size:0.8rem;margin-top:0.5rem;">Edit tasks as JSON. Changes apply from today forward.</p>
 
-  <script src="tasks.js"></script>
+      <h2 style="margin-top:1.5rem;">Appearance</h2>
+      <label for="emoji-input">Task emoji:</label>
+      <input id="emoji-input" maxlength="2" style="width:3rem;margin-left:0.5rem;" />
+      <div style="margin-top:0.5rem;">
+        <label><input type="checkbox" id="quote-toggle"/> Show motivational quote</label>
+      </div>
+      <label style="display:block;margin-top:0.5rem;">Confetti colors:</label>
+      <input type="color" id="confetti1" />
+      <input type="color" id="confetti2" />
+      <button id="save-settings-btn" style="margin-top:0.5rem;">Save Settings</button>
+    </main>
+
+    <script src="settings.js"></script>
+    <script src="tasks.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const select = document.getElementById('day-select');
       const input = document.getElementById('tasks-input');
+      const accent = document.getElementById('accent-input');
+      const emojiInput = document.getElementById('emoji-input');
+      const quoteToggle = document.getElementById('quote-toggle');
+      const conf1 = document.getElementById('confetti1');
+      const conf2 = document.getElementById('confetti2');
+
+      const settings = loadSettings();
 
       function loadCurrent() {
         const day = select.value;
         const tasks = getTasksFor(day, new Date());
         input.value = JSON.stringify(tasks, null, 2);
+        accent.value = settings.colors[day] || '#ffffff';
       }
 
       select.onchange = loadCurrent;
       loadCurrent();
+      emojiInput.value = settings.emoji;
+      quoteToggle.checked = settings.showQuotes;
+      conf1.value = settings.confettiColors[0] || '#bb0000';
+      conf2.value = settings.confettiColors[1] || '#ffffff';
 
       document.getElementById('save-btn').onclick = () => {
         try {
@@ -51,6 +77,15 @@
         } catch(e) {
           alert('Invalid JSON');
         }
+      };
+
+      document.getElementById('save-settings-btn').onclick = () => {
+        settings.colors[select.value] = accent.value;
+        settings.emoji = emojiInput.value;
+        settings.showQuotes = quoteToggle.checked;
+        settings.confettiColors = [conf1.value, conf2.value];
+        saveSettings(settings);
+        alert('Settings saved!');
       };
 
       lucide.replace();
