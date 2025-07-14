@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="manifest" href="manifest.json" />
   <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
   <header class="header">
@@ -16,6 +17,7 @@
   </header>
 
   <main>
+    <p id="motivation"></p>
     <section id="task-container"></section>
   </main>
 
@@ -23,109 +25,175 @@
     document.addEventListener('DOMContentLoaded', () => {
       const tasksByDay = {
         monday: {
-          '🌅 AM Mobility (5–10 min)': {
-            note: 'Do a brief morning mobility flow to loosen up for the day. Focus on spine and shoulder mobility to prep for throwing later.',
+          '🌅 AM Mobility (5–10\u00a0min)': {
+            note: 'Brief morning flow to loosen spine and shoulders',
             items: [
-              '1–2 sets of Cat‑Cows',
-              '1–2 sets of Arm Circles',
-              '1–2 sets of Band Pull‑Aparts',
-              '1–2 sets of Thoracic Rotations'
+              '1–2 sets Cat\u2011Cows',
+              '1–2 sets Thoracic rotations',
+              '1–2 sets Arm circles',
+              '1–2 sets Band pull-aparts'
             ]
           },
           '☀️ PM Javelin Session': {
-            note: 'Technique drills, run‑up, and throws with coach',
+            note: 'Dynamic warm-up, technique drills, run-up & throws',
             items: [
-              'Dynamic warm‑up: light jog, skips, arm/leg swings',
+              'Dynamic warm-up: jog, skips, arm/leg swings',
               'Throwing drills: running crossovers, elastic band drills',
-              'Focus: lead with hip/chest, relaxed arm until final whip',
-              'Block leg & shoulder layback for max energy transfer'
+              'Lead with hip & chest, relaxed arm until final whip',
+              'Firm block leg and good shoulder layback',
+              'Eyes on target through release'
             ]
           },
-          '🛠️ Post‑Throw Arm Care': {
-            note: 'Cooldown to speed recovery and safeguard shoulder/elbow',
+          '🛠️ Post-Throw Arm Care': {
+            note: 'Cooldown to recover shoulder and elbow',
             items: [
-              'Light band pull‑aparts – 2×15–20 (scapular retraction)',
-              'Banded external rotations – 2×15 each arm (rotator cuff)',
-              'High‑rep band curls & triceps ext – 1×50–100',
-              'Sleeper stretch for shoulder IR',
-              'Forearm/wrist stretches',
-              'Slow spinal twist or “thrower’s stretch”'
+              'Band pull-aparts 2×15–20',
+              'External rotations 2×15 each arm',
+              'High-rep band curls & triceps ext 1×50–100',
+              'Sleeper stretch',
+              'Forearm & wrist stretches',
+              'Gentle spinal twist / thrower\u2019s stretch'
             ]
           }
         },
         tuesday: {
-          '🌙 Evening Mobility (Day 1)': {
+          '🌙 Evening Mobility (Day\u00a01)': {
             note: 'Hanging + Back Bridge focus',
             items: [
-              'Passive/Active hang – 1–2×60s',
-              'Back Bridge rotations – 1–2×1m'
+              'Quadruped straw breathing',
+              'Single leg stand',
+              'Segmented Cat‑Cow',
+              'Flexion to extension spinal hygiene',
+              'Scapula circles',
+              'Cross‑crawl supermans',
+              'Passive/Active hang 30–60s',
+              'Hanging lat stretch',
+              'Standing bridge rotations against wall',
+              'Cross-bench pullover',
+              'Optional back bridge hold',
+              'Barefoot jog/hops 5–10\u00a0min'
             ]
           },
           '🛡️ Shoulder Prehab': {
             items: [
-              'Scapular push‑ups – 2×15',
-              'Wall Angels – 2×10'
-            ]
-          },
-          '🏃 Optional': {
-            items: [
-              'Barefoot jog/hops – 5–10 min'
+              'Scapular push-ups 2×15',
+              'Wall Angels 2×10',
+              'External rotation with dumbbell 2×10 each',
+              'Y‑T‑W raises 2×8 each'
             ]
           }
         },
         wednesday: {
-          '🏋️‍♂️ Gym (Lower‑Body)': {
+          '🏋️‍♂️ Gym Session (Lower Body)': {
+            note: 'Morning strength work for legs and core',
             items: [
-              'Trap‑bar deadlift – 4×5',
-              'Box squats – 3×8',
-              'Split squats/lunges – 3×8 each',
-              'Back extensions – 2×15',
-              'Planks – 2×45s'
+              'Warm-up: cardio, leg swings, lunges',
+              'Optional plyometrics: box jumps or bounding',
+              'Trap-bar deadlift 4×5',
+              'Box squat 3×8',
+              'Split squats/lunges 3×8 each leg',
+              'Nordic curls or RDL 2×10',
+              'Back extensions 2×15',
+              'Planks or side planks 2×45s',
+              'Cooldown stretch & roll'
             ]
           }
         },
         thursday: {
-          '🌅 AM Mobility (5–10 min)': {
-            note: 'Quick activation for throwing session tonight',
-            items: [ 'Cat‑Cows, Arm Circles, Band Pull‑Aparts' ]
+          '🌅 AM Mobility (5–10\u00a0min)': {
+            note: 'Quick activation for evening throws',
+            items: [
+              'Cat‑Cows',
+              'Arm circles',
+              'Band pull-aparts'
+            ]
           },
           '☀️ PM Javelin Session': {
-            note: 'Coached throwing practice',
-            items: [ 'Technique drills, run‑up, and full throws' ]
+            note: 'Evening technical throwing practice',
+            items: [
+              'Dynamic warm-up with extra leg prep',
+              'Smooth crossovers with hip drive',
+              'Focus on tall posture then finish low',
+              'Use whole body, throw through the point'
+            ]
           },
-          '🛠️ Post‑Throw Arm Care': {
-            items: [ 'Same as Monday arm care routine' ]
+          '🛠️ Post-Throw Arm Care': {
+            items: [
+              'Repeat Monday arm care routine'
+            ]
           }
         },
         friday: {
-          '🏋️‍♂️ Gym (Upper‑Body)': {
+          '🏋️‍♂️ Gym Session (Upper Body)': {
+            note: 'Build pressing and pulling strength',
             items: [
-              'Bench press – 5×5',
-              'Med‑ball overhead throws – 3×5',
-              'Dumbbell fly – 3×10',
-              'Rows and face pulls – 3×12',
-              'Pallof press – 2×10 each side'
+              'Warm-up: jump rope & shoulder mobility',
+              'Bench press 5×5',
+              'Overhead med ball reverse throws 3×5',
+              'Dumbbell chest fly 3×8‑10',
+              'Single-arm dumbbell rows 3×10',
+              'Face pulls 3×12',
+              'Y‑T‑W or scap pull-ups 2×8',
+              'Pallof press/Russian twists',
+              'Stretch chest & lats'
             ]
           }
         },
         saturday: {
-          '🌙 Evening Mobility (Day 2)': {
-            note: 'Side Split + Palms to Floor',
-            items: [ 'Deep squat groin stretch', 'Iso lunge hold – 2–5 min' ]
-          },
-          '🏃‍♂️ Light Conditioning': {
-            items: [ 'Sprint drills or easy jog – 4×30m or 10 min' ]
+          '🌙 Evening Mobility (Day\u00a02)': {
+            note: 'Side Split + Palms to Floor work',
+            items: [
+              'Quadruped straw breathing',
+              'Single leg stand',
+              'Seated leg raises',
+              'Couch stretch',
+              'Triangle pose',
+              'Toes-elevated single-leg hamstring stretch',
+              'Deep squat groin stretch',
+              'Side split push-ups',
+              'Knee-to-head marches',
+              '3-step horse stance isometric',
+              'ATG split squat pulses',
+              'Sissy squats',
+              'Wide stance alternating windmill',
+              'Iso lunge hold 2–5\u00a0min each side',
+              'Test side split & forward fold',
+              'Sprint drills or easy jog',
+              'Foam roll or extra prehab'
+            ]
           }
         },
         sunday: {
-          '🌄 Recovery & Mobility (Day 3)': {
-            note: 'Thrower’s Stretch + Front Split',
-            items: [ 'Pigeon stretch', 'Thoracic bridge reaches' ]
-          },
-          '🍽️ Recovery & Reflection': {
-            items: [ 'Active rest: walk or bike', 'Reflect & plan next week' ]
+          '🌄 Recovery & Mobility (Day\u00a03)': {
+            note: 'Thrower\u2019s Stretch + Front Split focus',
+            items: [
+              'Quadruped straw breathing',
+              'Single leg stand',
+              '90/90 switches',
+              'Pigeon stretch',
+              'Wall-blocked shoulder arcs',
+              'Cross-legged side bend',
+              'Overhead lunging reach',
+              'Assisted chest stretch on floor',
+              'Eccentric front split lowering',
+              'Thoracic bridge reaches',
+              'Hold thrower\u2019s stretch with stick',
+              'Test front split',
+              'Walk or bike',
+              'Reflect & plan next week'
+            ]
           }
         }
+      };
+
+      const motivationByDay = {
+        monday: 'New week. New opportunities!',
+        tuesday: 'Consistency compounds results.',
+        wednesday: 'Halfway done\u2014bring the heat!',
+        thursday: 'Blast off with technique.',
+        friday: 'Leave it all on the field.',
+        saturday: 'Unlock your body\u2019s potential.',
+        sunday: 'Rest today, dominate tomorrow.'
       };
 
       const dateEl = document.getElementById('date');
@@ -137,7 +205,9 @@
       function render() {
         container.innerHTML = '';
         const key = currentDate.toLocaleDateString(undefined,{weekday:'long'}).toLowerCase();
+        document.body.className = key;
         dateEl.textContent = currentDate.toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'});
+        document.getElementById('motivation').textContent = motivationByDay[key] || '';
         const dayData = tasksByDay[key] || {};
 
         for (let [group, data] of Object.entries(dayData)) {
@@ -158,7 +228,12 @@
             chk.addEventListener('change',()=>{
               localStorage.setItem(id,chk.checked);
               li.classList.toggle('completed',chk.checked);
-              if(chk.checked) ul.appendChild(li); else ul.insertBefore(li,ul.children[i]);
+              if(chk.checked) {
+                ul.appendChild(li);
+                confetti({particleCount:30,spread:55,origin:{y:0.6}});
+              } else {
+                ul.insertBefore(li,ul.children[i]);
+              }
             });
             const lbl = document.createElement('label'); lbl.htmlFor=id;
             lbl.innerHTML = `<i data-lucide='circle'></i> ${task}`;
