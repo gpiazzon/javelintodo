@@ -1,6 +1,7 @@
 const CACHE_NAME = 'javelin-checklist-v1';
 const FILES_TO_CACHE = [
-  '.', 'index.html', 'style.css', 'manifest.json', 'sw.js'
+  '.', 'index.html', 'settings.html', 'style.css',
+  'manifest.json', 'sw.js', 'tasks.js'
 ];
 self.addEventListener('install', evt => {
   evt.waitUntil(
