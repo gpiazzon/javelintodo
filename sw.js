@@ -2,11 +2,14 @@ const CACHE_NAME = 'javelin-checklist-v1';
 const FILES_TO_CACHE = [
   '.',
   'index.html',
+  'task-editor.html',
   'settings.html',
   'style.css',
   'manifest.json',
   'sw.js',
   'tasks.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css',
+  'https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js',
   'https://cdn.jsdelivr.net/npm/lucide@latest/dist/lucide.min.js',
   'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js'
 ];
