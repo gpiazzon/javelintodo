@@ -75,6 +75,13 @@ body.sunday { --accent: #EFD8B7; }
   font-weight: 600;
 }
 
+#view-only-msg {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-style: italic;
+  color: #b00;
+}
+
 @media (max-width: 600px) {
   .task-item { padding: .5rem; }
   .task-group h2 { font-size: .9rem; padding: .5rem; }

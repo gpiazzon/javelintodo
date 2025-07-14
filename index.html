@@ -20,6 +20,7 @@
 
   <main>
     <p id="motivation"></p>
+    <p id="view-only-msg" class="view-only" style="display:none;">Past or future days are view-only.</p>
     <section id="task-container"></section>
   </main>
 
@@ -38,8 +39,13 @@
         const dateKey = currentDate.toISOString().split('T')[0];
         document.body.className = weekdayKey;
         dateEl.textContent = currentDate.toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'});
-        document.getElementById('motivation').textContent = motivationByDay[weekdayKey] || '';
-        const dayData = getTasksFor(weekdayKey, currentDate);
+
+        document.getElementById('motivation').textContent = motivationByDay[key] || '';
+        const viewOnly = currentDate.toDateString() !== new Date().toDateString();
+        const viewMsg = document.getElementById('view-only-msg');
+        viewMsg.style.display = viewOnly ? 'block' : 'none';
+        const dayData = getTasksFor(key, currentDate);
+
         for (let [group, data] of Object.entries(dayData)) {
           const groupEl = document.createElement('div');
           groupEl.className = 'task-group';
@@ -55,16 +61,9 @@
             const oldId = `${weekdayKey}-${group}-${i}`;
             const li = document.createElement('li'); li.className='task-item';
             const chk = document.createElement('input'); chk.type='checkbox'; chk.id=id;
-            let stored = localStorage.getItem(id);
-            if(stored === null){
-              const oldStored = localStorage.getItem(oldId);
-              if(oldStored !== null){
-                stored = oldStored;
-                localStorage.setItem(id, oldStored);
-                localStorage.removeItem(oldId);
-              }
-            }
-            chk.checked=JSON.parse(stored||false);
+            chk.checked=JSON.parse(localStorage.getItem(id)||false);
+            chk.disabled = viewOnly;
+
             chk.addEventListener('change',()=>{
               localStorage.setItem(id,chk.checked);
               li.classList.toggle('completed',chk.checked);
