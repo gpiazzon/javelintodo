@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings - Javelin Checklist</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="header">
+    <a href="index.html" class="nav-btn" aria-label="Back"><i data-lucide="chevron-left"></i></a>
+    <h1 class="date-title">Settings</h1>
+  </header>
+
+  <main>
+    <label for="day-select">Choose Day:</label>
+    <select id="day-select">
+      <option value="monday">Monday</option>
+      <option value="tuesday">Tuesday</option>
+      <option value="wednesday">Wednesday</option>
+      <option value="thursday">Thursday</option>
+      <option value="friday">Friday</option>
+      <option value="saturday">Saturday</option>
+      <option value="sunday">Sunday</option>
+    </select>
+    <textarea id="tasks-input" rows="15" style="width:100%;margin-top:1rem;"></textarea>
+    <button id="save-btn" style="margin-top:0.5rem;">Save</button>
+    <p style="font-size:0.8rem;margin-top:0.5rem;">Edit tasks as JSON. Changes apply from today forward.</p>
+  </main>
+
+  <script src="tasks.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const select = document.getElementById('day-select');
+      const input = document.getElementById('tasks-input');
+
+      function loadCurrent() {
+        const day = select.value;
+        const tasks = getTasksFor(day, new Date());
+        input.value = JSON.stringify(tasks, null, 2);
+      }
+
+      select.onchange = loadCurrent;
+      loadCurrent();
+
+      document.getElementById('save-btn').onclick = () => {
+        try {
+          const obj = JSON.parse(input.value);
+          saveNewTasks(select.value, obj);
+          alert('Saved!');
+        } catch(e) {
+          alert('Invalid JSON');
+        }
+      };
+
+      lucide.replace();
+    });
+  </script>
+</body>
+</html>
