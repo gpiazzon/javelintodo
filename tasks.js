@@ -186,6 +186,21 @@ function saveTaskHistory(hist) {
   localStorage.setItem('taskHistory', JSON.stringify(hist));
 }
 
+// --- Custom user tasks ---
+function loadCustomTasks() {
+  return JSON.parse(localStorage.getItem('customTasks') || '[]');
+}
+
+function saveCustomTasks(tasks) {
+  localStorage.setItem('customTasks', JSON.stringify(tasks));
+}
+
+function addCustomTask(task) {
+  const tasks = loadCustomTasks();
+  tasks.push(task);
+  saveCustomTasks(tasks);
+}
+
 function getTasksFor(dayKey, date) {
   const hist = loadTaskHistory();
   const plans = hist[dayKey] || [];
@@ -194,6 +209,23 @@ function getTasksFor(dayKey, date) {
   let result = plans[0].tasks;
   for (const p of plans) {
     if (p.start <= target) result = p.tasks; else break;
+  }
+  // Merge in any custom tasks for this date
+  const custom = loadCustomTasks();
+  const dayNum = date.getDay();
+  const extras = custom.filter(t => {
+    if (t.date) return t.date === target;
+    if (t.repeat === 'daily') return true;
+    if (Array.isArray(t.repeat)) return t.repeat.includes(dayNum);
+    return false;
+  });
+  if (extras.length) {
+    const grp = result['Custom Tasks'] || { items: [] };
+    extras.forEach(t => {
+      const text = `${t.emoji ? t.emoji + ' ' : ''}<span style="color:${t.color||'inherit'}">${t.label}</span>`;
+      grp.items.push(text);
+    });
+    result['Custom Tasks'] = grp;
   }
   return result;
 }

@@ -8,36 +8,52 @@
   <link rel="manifest" href="manifest.json" />
   <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="settings.js"></script>
 </head>
 <body>
   <header class="header">
     <button id="prev-day" class="nav-btn" aria-label="Previous Day"><i data-lucide="chevron-left"></i></button>
     <h1 id="date" class="date-title"></h1>
     <button id="next-day" class="nav-btn" aria-label="Next Day"><i data-lucide="chevron-right"></i></button>
+    <a href="task-editor.html" class="nav-btn" aria-label="Add Task"><i data-lucide="plus"></i></a>
     <a href="settings.html" class="nav-btn" aria-label="Settings"><i data-lucide="settings"></i></a>
   </header>
 
   <main>
     <p id="motivation"></p>
+    <p id="view-only-msg" class="view-only" style="display:none;">Past or future days are view-only.</p>
     <section id="task-container"></section>
   </main>
 
   <script src="tasks.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      const settings = loadSettings();
       const dateEl = document.getElementById('date');
       const container = document.getElementById('task-container');
       const prevBtn = document.getElementById('prev-day');
       const nextBtn = document.getElementById('next-day');
+      const motivationEl = document.getElementById('motivation');
       let currentDate = new Date();
+
+      function applyDaySettings(dayKey) {
+        const color = settings.colors[dayKey];
+        if (color) document.body.style.setProperty('--accent', color);
+        motivationEl.style.display = settings.showQuotes ? '' : 'none';
+        motivationEl.textContent = motivationByDay[dayKey] || '';
+      }
 
       function render() {
         container.innerHTML = '';
-        const key = currentDate.toLocaleDateString(undefined,{weekday:'long'}).toLowerCase();
-        document.body.className = key;
+        const weekdayKey = currentDate.toLocaleDateString(undefined,{weekday:'long'}).toLowerCase();
+        const dateKey = currentDate.toISOString().split('T')[0];
+        document.body.className = weekdayKey;
         dateEl.textContent = currentDate.toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'});
-        document.getElementById('motivation').textContent = motivationByDay[key] || '';
+
+        applyDaySettings(key);
+
         const dayData = getTasksFor(key, currentDate);
+
         for (let [group, data] of Object.entries(dayData)) {
           const groupEl = document.createElement('div');
           groupEl.className = 'task-group';
@@ -49,26 +65,31 @@
           }
           const ul = document.createElement('ul');
           data.items.forEach((task,i) => {
-            const id = `${key}-${group}-${i}`;
+            const id = `${dateKey}-${group}-${i}`;
+            const oldId = `${weekdayKey}-${group}-${i}`;
             const li = document.createElement('li'); li.className='task-item';
             const chk = document.createElement('input'); chk.type='checkbox'; chk.id=id;
             chk.checked=JSON.parse(localStorage.getItem(id)||false);
+            chk.disabled = viewOnly;
+
             chk.addEventListener('change',()=>{
               localStorage.setItem(id,chk.checked);
               li.classList.toggle('completed',chk.checked);
               if(chk.checked) {
                 ul.appendChild(li);
-                confetti({particleCount:30,spread:55,origin:{y:0.6}});
+                confetti({particleCount:30,spread:55,origin:{y:0.6},colors:settings.confettiColors});
               } else {
                 ul.insertBefore(li,ul.children[i]);
               }
             });
+
             const lbl = document.createElement('label');
             lbl.htmlFor = id;
             lbl.textContent = task;
             const icon = document.createElement('i');
             icon.dataset.lucide = 'circle';
             lbl.prepend(icon);
+
             li.append(chk,lbl);
             if(chk.checked) li.classList.add('completed');
             ul.appendChild(li);
