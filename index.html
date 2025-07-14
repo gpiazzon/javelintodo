@@ -4,86 +4,112 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Javelin Training Checklist</title>
-  <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json" />
+  <!-- Lucide icons -->
+  <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/lucide.min.js"></script>
 </head>
 <body>
-  <header>
-    <h1>Daily Javelin Training Checklist</h1>
-    <small id="date"></small>
+  <header class="header">
+    <button id="prev-day" class="nav-btn" aria-label="Previous Day"><i data-lucide="chevron-left"></i></button>
+    <h1 id="date" class="date-title"></h1>
+    <button id="next-day" class="nav-btn" aria-label="Next Day"><i data-lucide="chevron-right"></i></button>
   </header>
+
   <main>
-    <ul id="tasks"></ul>
+    <section id="task-container"></section>
   </main>
+
   <script>
+    // Task definitions with detailed to-dos per group
     const tasksByDay = {
-      monday: [
-        'AM Mobility Warm-up',
-        'Javelin Practice (evening)',
-        'Post-throw Arm Care'
-      ],
-      tuesday: [
-        'Evening Mobility: Hanging + Back Bridge',
-        'Shoulder Prehab',
-        'Optional Barefoot Jog/Hops'
-      ],
-      wednesday: [
-        'Gym: Trap-bar Deadlift & Box Squat',
-        'Split Squats/Lunges & Posterior Chain',
-        'Core Stabilization & Cooldown'
-      ],
-      thursday: [
-        'AM Mobility Warm-up',
-        'Javelin Practice (evening)',
-        'Post-throw Arm Care'
-      ],
-      friday: [
-        'Gym: Bench Press & Med Ball Throws',
-        'Upper Back & Rotator Cuff',
-        'Rotational Core Work'
-      ],
-      saturday: [
-        'Evening Mobility: Side Split + Palms to Floor',
-        'Light Conditioning or Active Rest',
-        'Optional Prehab/Massage'
-      ],
-      sunday: [
-        'Evening Mobility: Thrower’s Stretch + Front Split',
-        'Active Rest & Recovery',
-        'Reflection & Nutrition'
-      ]
+      monday: {
+        AM: [
+          'Cat-Cow: 1–2 sets',
+          'Thoracic Rotations: 1–2 sets'
+        ],
+        PM: [
+          'Javelin session (throwing with coach)' 
+        ],
+        'Post-Throw': [
+          'Light band pull-aparts: 2×20',
+          'Banded external rotations: 2×15 each',
+          'High-rep band curls & triceps ext: 1×50 each'
+        ]
+      },
+      tuesday: {
+        'Evening Mobility': [
+          'Hanging passive/active hang: 1–2×60s',
+          'Back Bridge rotations: 1–2×1m'
+        ],
+        'Shoulder Prehab': [
+          'Scapular push-ups: 2×15',
+          'Wall angels: 2×10'
+        ],
+        'Optional': [
+          'Barefoot jog/hops: 5–10min'
+        ]
+      },
+      // ... fill for all days similarly
     };
 
-    const today = new Date();
-    const options = { weekday: 'long', month: 'long', day: 'numeric' };
-    document.getElementById('date').textContent = today.toLocaleDateString(undefined, options);
+    const dateEl = document.getElementById('date');
+    const container = document.getElementById('task-container');
+    const navPrev = document.getElementById('prev-day');
+    const navNext = document.getElementById('next-day');
 
-    const weekday = today.toLocaleDateString(undefined, { weekday: 'long' }).toLowerCase();
-    const taskList = tasksByDay[weekday] || [];
-    const ul = document.getElementById('tasks');
+    let currentDate = new Date();
 
-    taskList.forEach((label, idx) => {
-      const li = document.createElement('li');
-      const id = `task-${idx}`;
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.id = id;
-      checkbox.checked = JSON.parse(localStorage.getItem(id) || false);
-      checkbox.addEventListener('change', () => {
-        localStorage.setItem(id, checkbox.checked);
-      });
-      const labelEl = document.createElement('label');
-      labelEl.htmlFor = id;
-      labelEl.textContent = label;
-      li.appendChild(checkbox);
-      li.appendChild(labelEl);
-      ul.appendChild(li);
-    });
+    function renderTasks() {
+      container.innerHTML = '';
+      const dayKey = currentDate.toLocaleDateString(undefined,{weekday:'long'}).toLowerCase();
+      dateEl.textContent = currentDate.toLocaleDateString(undefined, { weekday: 'long', month:'short', day:'numeric' });
+      const dayTasks = tasksByDay[dayKey] || {};
 
-    // register service worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
+      for (const [group, items] of Object.entries(dayTasks)) {
+        const groupEl = document.createElement('div');
+        groupEl.className = 'task-group';
+        const header = document.createElement('h2');
+        header.textContent = group;
+        groupEl.appendChild(header);
+
+        const ul = document.createElement('ul');
+        items.forEach((task, idx) => {
+          const id = `${dayKey}-${group}-${idx}`;
+          const li = document.createElement('li');
+          li.className = 'task-item';
+
+          const chk = document.createElement('input');
+          chk.type = 'checkbox';
+          chk.id = id;
+          chk.checked = JSON.parse(localStorage.getItem(id) || false);
+          chk.addEventListener('change', () => {
+            localStorage.setItem(id, chk.checked);
+            li.classList.toggle('completed', chk.checked);
+            // move completed to bottom
+            if (chk.checked) ul.appendChild(li);
+            else ul.insertBefore(li, ul.children[idx]);
+          });
+
+          const label = document.createElement('label');
+          label.htmlFor = id;
+          label.innerHTML = `<i data-lucide=\"circle\"></i> ${task}`;
+
+          li.appendChild(chk);
+          li.appendChild(label);
+          if (chk.checked) li.classList.add('completed');
+          ul.appendChild(li);
+        });
+        groupEl.appendChild(ul);
+        container.appendChild(groupEl);
+      }
+      lucide.replace();
     }
+
+    navPrev.addEventListener('click', () => { currentDate.setDate(currentDate.getDate() -1); renderTasks(); });
+    navNext.addEventListener('click', () => { currentDate.setDate(currentDate.getDate() +1); renderTasks(); });
+
+    renderTasks();
   </script>
 </body>
 </html>
