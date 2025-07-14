@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Task</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/lucide.min.js"></script>
+</head>
+<body>
+  <header class="header">
+    <a href="index.html" class="nav-btn" aria-label="Back"><i data-lucide="chevron-left"></i></a>
+    <h1 class="date-title">New Task</h1>
+  </header>
+  <main class="container" style="margin-top:1rem;">
+    <div class="input-field">
+      <input id="label" type="text" />
+      <label for="label">Task Label</label>
+    </div>
+    <div class="input-field">
+      <input id="emoji" type="text" placeholder="\uD83D\uDE00" />
+      <label for="emoji">Emoji</label>
+    </div>
+    <div class="input-field">
+      <input id="color" type="color" value="#ff0000" style="height:2.5rem;" />
+      <label class="active" for="color">Color</label>
+    </div>
+    <p>Repeat:</p>
+    <p>
+      <label>
+        <input name="repeat" type="radio" value="daily" checked />
+        <span>Daily</span>
+      </label>
+    </p>
+    <p>
+      <label>
+        <input name="repeat" type="radio" value="weekdays" />
+        <span>Select Weekdays</span>
+      </label>
+    </p>
+    <div id="weekday-boxes" style="display:none;margin-bottom:1rem;">
+      <label style="margin-right:0.5rem;"><input type="checkbox" value="1"/><span>Mon</span></label>
+      <label style="margin-right:0.5rem;"><input type="checkbox" value="2"/><span>Tue</span></label>
+      <label style="margin-right:0.5rem;"><input type="checkbox" value="3"/><span>Wed</span></label>
+      <label style="margin-right:0.5rem;"><input type="checkbox" value="4"/><span>Thu</span></label>
+      <label style="margin-right:0.5rem;"><input type="checkbox" value="5"/><span>Fri</span></label>
+      <label style="margin-right:0.5rem;"><input type="checkbox" value="6"/><span>Sat</span></label>
+      <label style="margin-right:0.5rem;"><input type="checkbox" value="0"/><span>Sun</span></label>
+    </div>
+    <button id="add-btn" class="btn">Add Task</button>
+  </main>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script src="tasks.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const repeatRadios = document.getElementsByName('repeat');
+      const weekBox = document.getElementById('weekday-boxes');
+      repeatRadios.forEach(r => {
+        r.addEventListener('change', () => {
+          weekBox.style.display = repeatRadios[1].checked ? 'block' : 'none';
+        });
+      });
+      document.getElementById('add-btn').addEventListener('click', () => {
+        const label = document.getElementById('label').value.trim();
+        if(!label) { M.toast({text:'Label required'}); return; }
+        const emoji = document.getElementById('emoji').value.trim();
+        const color = document.getElementById('color').value;
+        let repeat;
+        if(repeatRadios[0].checked) repeat = 'daily';
+        else repeat = Array.from(weekBox.querySelectorAll('input:checked')).map(cb => parseInt(cb.value));
+        addCustomTask({label, emoji, color, repeat});
+        M.toast({text:'Task added'});
+        document.getElementById('label').value='';
+        document.getElementById('emoji').value='';
+      });
+      lucide.replace();
+    });
+  </script>
+</body>
+</html>
