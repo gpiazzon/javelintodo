@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,94 +23,158 @@
     document.addEventListener('DOMContentLoaded', () => {
       const tasksByDay = {
         monday: {
-          'AM Mobility (5–10 min)': [
-            'Do a brief morning mobility flow to loosen up for the day. Focus on spine and shoulder mobility to prep for throwing later.',
-            '1–2 sets of Cat-Cows',
-            '1–2 sets of Thoracic Rotations',
-            '1–2 sets of Arm Circles',
-            '1–2 sets of Band Pull-Aparts'
-          ],
-          'PM Javelin Session': [
-            '<strong>Technique Drills & Warm-Up:</strong> Light jog, skips, arm swings, leg swings',
-            '<strong>Throwing Drills:</strong> Running crossovers, elastic band drills to ingrain rhythm',
-            '<strong>Technique Focus:</strong> Lead with hip/chest, maintain relaxed arm until final whip',
-            'Emphasize a firm block leg and shoulder layback for maximal transfer of energy'
-          ],
-          'Post-Throw Cooldown (Arm Care)': [
-            'Light band pull-aparts – 2×15–20 (scapular retraction)',
-            'Banded external rotations – 2×15 each arm (rotator cuff strength)',
-            'High-rep band curls & triceps extensions – 1×50–100 each (protect elbow ligaments)',
-            'Gentle Sleeper Stretch for shoulder internal rotation',
-            'Forearm/wrist stretches',
-            'Slow spinal twist or “thrower’s stretch” for torso'
-          ]
+          '🌅 AM Mobility (5–10 min)': {
+            note: 'Do a brief morning mobility flow to loosen up for the day. Focus on spine and shoulder mobility to prep for throwing later.',
+            items: [
+              '1–2 sets of Cat‑Cows',
+              '1–2 sets of Arm Circles',
+              '1–2 sets of Band Pull‑Aparts',
+              '1–2 sets of Thoracic Rotations'
+            ]
+          },
+          '☀️ PM Javelin Session': {
+            note: 'Technique drills, run‑up, and throws with coach',
+            items: [
+              'Dynamic warm‑up: light jog, skips, arm/leg swings',
+              'Throwing drills: running crossovers, elastic band drills',
+              'Focus: lead with hip/chest, relaxed arm until final whip',
+              'Block leg & shoulder layback for max energy transfer'
+            ]
+          },
+          '🛠️ Post‑Throw Arm Care': {
+            note: 'Cooldown to speed recovery and safeguard shoulder/elbow',
+            items: [
+              'Light band pull‑aparts – 2×15–20 (scapular retraction)',
+              'Banded external rotations – 2×15 each arm (rotator cuff)',
+              'High‑rep band curls & triceps ext – 1×50–100',
+              'Sleeper stretch for shoulder IR',
+              'Forearm/wrist stretches',
+              'Slow spinal twist or “thrower’s stretch”'
+            ]
+          }
         },
-        // Add other days similarly...
+        tuesday: {
+          '🌙 Evening Mobility (Day 1)': {
+            note: 'Hanging + Back Bridge focus',
+            items: [
+              'Passive/Active hang – 1–2×60s',
+              'Back Bridge rotations – 1–2×1m'
+            ]
+          },
+          '🛡️ Shoulder Prehab': {
+            items: [
+              'Scapular push‑ups – 2×15',
+              'Wall Angels – 2×10'
+            ]
+          },
+          '🏃 Optional': {
+            items: [
+              'Barefoot jog/hops – 5–10 min'
+            ]
+          }
+        },
+        wednesday: {
+          '🏋️‍♂️ Gym (Lower‑Body)': {
+            items: [
+              'Trap‑bar deadlift – 4×5',
+              'Box squats – 3×8',
+              'Split squats/lunges – 3×8 each',
+              'Back extensions – 2×15',
+              'Planks – 2×45s'
+            ]
+          }
+        },
+        thursday: {
+          '🌅 AM Mobility (5–10 min)': {
+            note: 'Quick activation for throwing session tonight',
+            items: [ 'Cat‑Cows, Arm Circles, Band Pull‑Aparts' ]
+          },
+          '☀️ PM Javelin Session': {
+            note: 'Coached throwing practice',
+            items: [ 'Technique drills, run‑up, and full throws' ]
+          },
+          '🛠️ Post‑Throw Arm Care': {
+            items: [ 'Same as Monday arm care routine' ]
+          }
+        },
+        friday: {
+          '🏋️‍♂️ Gym (Upper‑Body)': {
+            items: [
+              'Bench press – 5×5',
+              'Med‑ball overhead throws – 3×5',
+              'Dumbbell fly – 3×10',
+              'Rows and face pulls – 3×12',
+              'Pallof press – 2×10 each side'
+            ]
+          }
+        },
+        saturday: {
+          '🌙 Evening Mobility (Day 2)': {
+            note: 'Side Split + Palms to Floor',
+            items: [ 'Deep squat groin stretch', 'Iso lunge hold – 2–5 min' ]
+          },
+          '🏃‍♂️ Light Conditioning': {
+            items: [ 'Sprint drills or easy jog – 4×30m or 10 min' ]
+          }
+        },
+        sunday: {
+          '🌄 Recovery & Mobility (Day 3)': {
+            note: 'Thrower’s Stretch + Front Split',
+            items: [ 'Pigeon stretch', 'Thoracic bridge reaches' ]
+          },
+          '🍽️ Recovery & Reflection': {
+            items: [ 'Active rest: walk or bike', 'Reflect & plan next week' ]
+          }
+        }
       };
 
       const dateEl = document.getElementById('date');
       const container = document.getElementById('task-container');
-      const navPrev = document.getElementById('prev-day');
-      const navNext = document.getElementById('next-day');
-
+      const prevBtn = document.getElementById('prev-day');
+      const nextBtn = document.getElementById('next-day');
       let currentDate = new Date();
 
-      function renderTasks() {
+      function render() {
         container.innerHTML = '';
-        const dayKey = currentDate.toLocaleDateString(undefined, { weekday: 'long' }).toLowerCase();
-        dateEl.textContent = currentDate.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
-        const dayTasks = tasksByDay[dayKey] || {};
+        const key = currentDate.toLocaleDateString(undefined,{weekday:'long'}).toLowerCase();
+        dateEl.textContent = currentDate.toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'});
+        const dayData = tasksByDay[key] || {};
 
-        Object.entries(dayTasks).forEach(([group, items]) => {
+        for (let [group, data] of Object.entries(dayData)) {
           const groupEl = document.createElement('div');
           groupEl.className = 'task-group';
-          const header = document.createElement('h2');
-          header.textContent = group;
-          groupEl.appendChild(header);
-
+          const h2 = document.createElement('h2'); h2.textContent = group;
+          groupEl.appendChild(h2);
+          if (data.note) {
+            const p = document.createElement('p'); p.className = 'note'; p.textContent = data.note;
+            groupEl.appendChild(p);
+          }
           const ul = document.createElement('ul');
-          items.forEach((task, idx) => {
-            const id = `${dayKey}-${idx}`;
-            const li = document.createElement('li');
-            li.className = 'task-item';
-
-            const chk = document.createElement('input');
-            chk.type = 'checkbox';
-            chk.id = id;
-            chk.checked = JSON.parse(localStorage.getItem(id) || false);
-            chk.addEventListener('change', () => {
-              localStorage.setItem(id, chk.checked);
-              li.classList.toggle('completed', chk.checked);
-              // reposition
-              if (chk.checked) ul.appendChild(li);
-              else ul.insertBefore(li, ul.children[idx]);
+          data.items.forEach((task,i) => {
+            const id = `${key}-${group}-${i}`;
+            const li = document.createElement('li'); li.className='task-item';
+            const chk = document.createElement('input'); chk.type='checkbox'; chk.id=id;
+            chk.checked=JSON.parse(localStorage.getItem(id)||false);
+            chk.addEventListener('change',()=>{
+              localStorage.setItem(id,chk.checked);
+              li.classList.toggle('completed',chk.checked);
+              if(chk.checked) ul.appendChild(li); else ul.insertBefore(li,ul.children[i]);
             });
-
-            const label = document.createElement('label');
-            label.htmlFor = id;
-            label.innerHTML = `${task}`;
-
-            li.appendChild(chk);
-            li.appendChild(label);
-            if (chk.checked) li.classList.add('completed');
+            const lbl = document.createElement('label'); lbl.htmlFor=id;
+            lbl.innerHTML = `<i data-lucide='circle'></i> ${task}`;
+            li.append(chk,lbl);
+            if(chk.checked) li.classList.add('completed');
             ul.appendChild(li);
           });
           groupEl.appendChild(ul);
           container.appendChild(groupEl);
-        });
+        }
         lucide.replace();
       }
 
-      navPrev.addEventListener('click', () => {
-        currentDate.setDate(currentDate.getDate() - 1);
-        renderTasks();
-      });
-      navNext.addEventListener('click', () => {
-        currentDate.setDate(currentDate.getDate() + 1);
-        renderTasks();
-      });
-
-      renderTasks();
+      prevBtn.onclick = () => { currentDate.setDate(currentDate.getDate()-1); render(); };
+      nextBtn.onclick = () => { currentDate.setDate(currentDate.getDate()+1); render(); };
+      render();
     });
   </script>
 </body>
