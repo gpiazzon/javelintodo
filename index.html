@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Javelin Training Checklist</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Daily Javelin Training Checklist</h1>
+    <small id="date"></small>
+  </header>
+  <main>
+    <ul id="tasks"></ul>
+  </main>
+  <script>
+    const tasksByDay = {
+      monday: [
+        'AM Mobility Warm-up',
+        'Javelin Practice (evening)',
+        'Post-throw Arm Care'
+      ],
+      tuesday: [
+        'Evening Mobility: Hanging + Back Bridge',
+        'Shoulder Prehab',
+        'Optional Barefoot Jog/Hops'
+      ],
+      wednesday: [
+        'Gym: Trap-bar Deadlift & Box Squat',
+        'Split Squats/Lunges & Posterior Chain',
+        'Core Stabilization & Cooldown'
+      ],
+      thursday: [
+        'AM Mobility Warm-up',
+        'Javelin Practice (evening)',
+        'Post-throw Arm Care'
+      ],
+      friday: [
+        'Gym: Bench Press & Med Ball Throws',
+        'Upper Back & Rotator Cuff',
+        'Rotational Core Work'
+      ],
+      saturday: [
+        'Evening Mobility: Side Split + Palms to Floor',
+        'Light Conditioning or Active Rest',
+        'Optional Prehab/Massage'
+      ],
+      sunday: [
+        'Evening Mobility: Thrower’s Stretch + Front Split',
+        'Active Rest & Recovery',
+        'Reflection & Nutrition'
+      ]
+    };
+
+    const today = new Date();
+    const options = { weekday: 'long', month: 'long', day: 'numeric' };
+    document.getElementById('date').textContent = today.toLocaleDateString(undefined, options);
+
+    const weekday = today.toLocaleDateString(undefined, { weekday: 'long' }).toLowerCase();
+    const taskList = tasksByDay[weekday] || [];
+    const ul = document.getElementById('tasks');
+
+    taskList.forEach((label, idx) => {
+      const li = document.createElement('li');
+      const id = `task-${idx}`;
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.id = id;
+      checkbox.checked = JSON.parse(localStorage.getItem(id) || false);
+      checkbox.addEventListener('change', () => {
+        localStorage.setItem(id, checkbox.checked);
+      });
+      const labelEl = document.createElement('label');
+      labelEl.htmlFor = id;
+      labelEl.textContent = label;
+      li.appendChild(checkbox);
+      li.appendChild(labelEl);
+      ul.appendChild(li);
+    });
+
+    // register service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+</body>
+</html>
