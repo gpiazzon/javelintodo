@@ -8,51 +8,208 @@
   <link rel="manifest" href="manifest.json" />
   <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-  <script src="settings.js"></script>
 </head>
 <body>
   <header class="header">
     <button id="prev-day" class="nav-btn" aria-label="Previous Day"><i data-lucide="chevron-left"></i></button>
     <h1 id="date" class="date-title"></h1>
     <button id="next-day" class="nav-btn" aria-label="Next Day"><i data-lucide="chevron-right"></i></button>
-    <a href="task-editor.html" class="nav-btn" aria-label="Add Task"><i data-lucide="plus"></i></a>
     <a href="settings.html" class="nav-btn" aria-label="Settings"><i data-lucide="settings"></i></a>
   </header>
 
   <main>
     <p id="motivation"></p>
-    <p id="view-only-msg" class="view-only" style="display:none;">Past or future days are view-only.</p>
     <section id="task-container"></section>
   </main>
 
-  <script src="tasks.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const settings = loadSettings();
+      const tasksByDay = {
+        monday: {
+          '🌅 AM Mobility (5–10\u00a0min)': {
+            note: 'Brief morning flow to loosen spine and shoulders',
+            items: [
+              '1–2 sets Cat\u2011Cows',
+              '1–2 sets Thoracic rotations',
+              '1–2 sets Arm circles',
+              '1–2 sets Band pull-aparts'
+            ]
+          },
+          '☀️ PM Javelin Session': {
+            note: 'Dynamic warm-up, technique drills, run-up & throws',
+            items: [
+              'Dynamic warm-up: jog, skips, arm/leg swings',
+              'Throwing drills: running crossovers, elastic band drills',
+              'Lead with hip & chest, relaxed arm until final whip',
+              'Firm block leg and good shoulder layback',
+              'Eyes on target through release'
+            ]
+          },
+          '🛠️ Post-Throw Arm Care': {
+            note: 'Cooldown to recover shoulder and elbow',
+            items: [
+              'Band pull-aparts 2×15–20',
+              'External rotations 2×15 each arm',
+              'High-rep band curls & triceps ext 1×50–100',
+              'Sleeper stretch',
+              'Forearm & wrist stretches',
+              'Gentle spinal twist / thrower\u2019s stretch'
+            ]
+          }
+        },
+        tuesday: {
+          '🌙 Evening Mobility (Day\u00a01)': {
+            note: 'Hanging + Back Bridge focus',
+            items: [
+              'Quadruped straw breathing',
+              'Single leg stand',
+              'Segmented Cat‑Cow',
+              'Flexion to extension spinal hygiene',
+              'Scapula circles',
+              'Cross‑crawl supermans',
+              'Passive/Active hang 30–60s',
+              'Hanging lat stretch',
+              'Standing bridge rotations against wall',
+              'Cross-bench pullover',
+              'Optional back bridge hold',
+              'Barefoot jog/hops 5–10\u00a0min'
+            ]
+          },
+          '🛡️ Shoulder Prehab': {
+            items: [
+              'Scapular push-ups 2×15',
+              'Wall Angels 2×10',
+              'External rotation with dumbbell 2×10 each',
+              'Y‑T‑W raises 2×8 each'
+            ]
+          }
+        },
+        wednesday: {
+          '🏋️‍♂️ Gym Session (Lower Body)': {
+            note: 'Morning strength work for legs and core',
+            items: [
+              'Warm-up: cardio, leg swings, lunges',
+              'Optional plyometrics: box jumps or bounding',
+              'Trap-bar deadlift 4×5',
+              'Box squat 3×8',
+              'Split squats/lunges 3×8 each leg',
+              'Nordic curls or RDL 2×10',
+              'Back extensions 2×15',
+              'Planks or side planks 2×45s',
+              'Cooldown stretch & roll'
+            ]
+          }
+        },
+        thursday: {
+          '🌅 AM Mobility (5–10\u00a0min)': {
+            note: 'Quick activation for evening throws',
+            items: [
+              'Cat‑Cows',
+              'Arm circles',
+              'Band pull-aparts'
+            ]
+          },
+          '☀️ PM Javelin Session': {
+            note: 'Evening technical throwing practice',
+            items: [
+              'Dynamic warm-up with extra leg prep',
+              'Smooth crossovers with hip drive',
+              'Focus on tall posture then finish low',
+              'Use whole body, throw through the point'
+            ]
+          },
+          '🛠️ Post-Throw Arm Care': {
+            items: [
+              'Repeat Monday arm care routine'
+            ]
+          }
+        },
+        friday: {
+          '🏋️‍♂️ Gym Session (Upper Body)': {
+            note: 'Build pressing and pulling strength',
+            items: [
+              'Warm-up: jump rope & shoulder mobility',
+              'Bench press 5×5',
+              'Overhead med ball reverse throws 3×5',
+              'Dumbbell chest fly 3×8‑10',
+              'Single-arm dumbbell rows 3×10',
+              'Face pulls 3×12',
+              'Y‑T‑W or scap pull-ups 2×8',
+              'Pallof press/Russian twists',
+              'Stretch chest & lats'
+            ]
+          }
+        },
+        saturday: {
+          '🌙 Evening Mobility (Day\u00a02)': {
+            note: 'Side Split + Palms to Floor work',
+            items: [
+              'Quadruped straw breathing',
+              'Single leg stand',
+              'Seated leg raises',
+              'Couch stretch',
+              'Triangle pose',
+              'Toes-elevated single-leg hamstring stretch',
+              'Deep squat groin stretch',
+              'Side split push-ups',
+              'Knee-to-head marches',
+              '3-step horse stance isometric',
+              'ATG split squat pulses',
+              'Sissy squats',
+              'Wide stance alternating windmill',
+              'Iso lunge hold 2–5\u00a0min each side',
+              'Test side split & forward fold',
+              'Sprint drills or easy jog',
+              'Foam roll or extra prehab'
+            ]
+          }
+        },
+        sunday: {
+          '🌄 Recovery & Mobility (Day\u00a03)': {
+            note: 'Thrower\u2019s Stretch + Front Split focus',
+            items: [
+              'Quadruped straw breathing',
+              'Single leg stand',
+              '90/90 switches',
+              'Pigeon stretch',
+              'Wall-blocked shoulder arcs',
+              'Cross-legged side bend',
+              'Overhead lunging reach',
+              'Assisted chest stretch on floor',
+              'Eccentric front split lowering',
+              'Thoracic bridge reaches',
+              'Hold thrower\u2019s stretch with stick',
+              'Test front split',
+              'Walk or bike',
+              'Reflect & plan next week'
+            ]
+          }
+        }
+      };
+
+      const motivationByDay = {
+        monday: 'New week. New opportunities!',
+        tuesday: 'Consistency compounds results.',
+        wednesday: 'Halfway done\u2014bring the heat!',
+        thursday: 'Blast off with technique.',
+        friday: 'Leave it all on the field.',
+        saturday: 'Unlock your body\u2019s potential.',
+        sunday: 'Rest today, dominate tomorrow.'
+      };
+
       const dateEl = document.getElementById('date');
       const container = document.getElementById('task-container');
       const prevBtn = document.getElementById('prev-day');
       const nextBtn = document.getElementById('next-day');
-      const motivationEl = document.getElementById('motivation');
       let currentDate = new Date();
-
-      function applyDaySettings(dayKey) {
-        const color = settings.colors[dayKey];
-        if (color) document.body.style.setProperty('--accent', color);
-        motivationEl.style.display = settings.showQuotes ? '' : 'none';
-        motivationEl.textContent = motivationByDay[dayKey] || '';
-      }
 
       function render() {
         container.innerHTML = '';
-        const weekdayKey = currentDate.toLocaleDateString(undefined,{weekday:'long'}).toLowerCase();
-        const dateKey = currentDate.toISOString().split('T')[0];
-        document.body.className = weekdayKey;
+        const key = currentDate.toLocaleDateString(undefined,{weekday:'long'}).toLowerCase();
+        document.body.className = key;
         dateEl.textContent = currentDate.toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'});
-
-        applyDaySettings(key);
-
-        const dayData = getTasksFor(key, currentDate);
+        document.getElementById('motivation').textContent = motivationByDay[key] || '';
+        const dayData = tasksByDay[key] || {};
 
         for (let [group, data] of Object.entries(dayData)) {
           const groupEl = document.createElement('div');
@@ -65,31 +222,22 @@
           }
           const ul = document.createElement('ul');
           data.items.forEach((task,i) => {
-            const id = `${dateKey}-${group}-${i}`;
-            const oldId = `${weekdayKey}-${group}-${i}`;
+            const id = `${key}-${group}-${i}`;
             const li = document.createElement('li'); li.className='task-item';
             const chk = document.createElement('input'); chk.type='checkbox'; chk.id=id;
             chk.checked=JSON.parse(localStorage.getItem(id)||false);
-            chk.disabled = viewOnly;
-
             chk.addEventListener('change',()=>{
               localStorage.setItem(id,chk.checked);
               li.classList.toggle('completed',chk.checked);
               if(chk.checked) {
                 ul.appendChild(li);
-                confetti({particleCount:30,spread:55,origin:{y:0.6},colors:settings.confettiColors});
+                confetti({particleCount:30,spread:55,origin:{y:0.6}});
               } else {
                 ul.insertBefore(li,ul.children[i]);
               }
             });
-
-            const lbl = document.createElement('label');
-            lbl.htmlFor = id;
-            lbl.textContent = task;
-            const icon = document.createElement('i');
-            icon.dataset.lucide = 'circle';
-            lbl.prepend(icon);
-
+            const lbl = document.createElement('label'); lbl.htmlFor=id;
+            lbl.innerHTML = `<i data-lucide='circle'></i> ${task}`;
             li.append(chk,lbl);
             if(chk.checked) li.classList.add('completed');
             ul.appendChild(li);
