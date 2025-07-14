@@ -1,3 +1,4 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +7,6 @@
   <title>Javelin Training Checklist</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="manifest" href="manifest.json" />
-  <!-- Lucide icons -->
   <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/lucide.min.js"></script>
 </head>
 <body>
@@ -21,95 +21,98 @@
   </main>
 
   <script>
-    // Task definitions with detailed to-dos per group
-    const tasksByDay = {
-      monday: {
-        AM: [
-          'Cat-Cow: 1–2 sets',
-          'Thoracic Rotations: 1–2 sets'
-        ],
-        PM: [
-          'Javelin session (throwing with coach)' 
-        ],
-        'Post-Throw': [
-          'Light band pull-aparts: 2×20',
-          'Banded external rotations: 2×15 each',
-          'High-rep band curls & triceps ext: 1×50 each'
-        ]
-      },
-      tuesday: {
-        'Evening Mobility': [
-          'Hanging passive/active hang: 1–2×60s',
-          'Back Bridge rotations: 1–2×1m'
-        ],
-        'Shoulder Prehab': [
-          'Scapular push-ups: 2×15',
-          'Wall angels: 2×10'
-        ],
-        'Optional': [
-          'Barefoot jog/hops: 5–10min'
-        ]
-      },
-      // ... fill for all days similarly
-    };
+    document.addEventListener('DOMContentLoaded', () => {
+      const tasksByDay = {
+        monday: {
+          'AM Mobility (5–10 min)': [
+            'Do a brief morning mobility flow to loosen up for the day. Focus on spine and shoulder mobility to prep for throwing later.',
+            '1–2 sets of Cat-Cows',
+            '1–2 sets of Thoracic Rotations',
+            '1–2 sets of Arm Circles',
+            '1–2 sets of Band Pull-Aparts'
+          ],
+          'PM Javelin Session': [
+            '<strong>Technique Drills & Warm-Up:</strong> Light jog, skips, arm swings, leg swings',
+            '<strong>Throwing Drills:</strong> Running crossovers, elastic band drills to ingrain rhythm',
+            '<strong>Technique Focus:</strong> Lead with hip/chest, maintain relaxed arm until final whip',
+            'Emphasize a firm block leg and shoulder layback for maximal transfer of energy'
+          ],
+          'Post-Throw Cooldown (Arm Care)': [
+            'Light band pull-aparts – 2×15–20 (scapular retraction)',
+            'Banded external rotations – 2×15 each arm (rotator cuff strength)',
+            'High-rep band curls & triceps extensions – 1×50–100 each (protect elbow ligaments)',
+            'Gentle Sleeper Stretch for shoulder internal rotation',
+            'Forearm/wrist stretches',
+            'Slow spinal twist or “thrower’s stretch” for torso'
+          ]
+        },
+        // Add other days similarly...
+      };
 
-    const dateEl = document.getElementById('date');
-    const container = document.getElementById('task-container');
-    const navPrev = document.getElementById('prev-day');
-    const navNext = document.getElementById('next-day');
+      const dateEl = document.getElementById('date');
+      const container = document.getElementById('task-container');
+      const navPrev = document.getElementById('prev-day');
+      const navNext = document.getElementById('next-day');
 
-    let currentDate = new Date();
+      let currentDate = new Date();
 
-    function renderTasks() {
-      container.innerHTML = '';
-      const dayKey = currentDate.toLocaleDateString(undefined,{weekday:'long'}).toLowerCase();
-      dateEl.textContent = currentDate.toLocaleDateString(undefined, { weekday: 'long', month:'short', day:'numeric' });
-      const dayTasks = tasksByDay[dayKey] || {};
+      function renderTasks() {
+        container.innerHTML = '';
+        const dayKey = currentDate.toLocaleDateString(undefined, { weekday: 'long' }).toLowerCase();
+        dateEl.textContent = currentDate.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
+        const dayTasks = tasksByDay[dayKey] || {};
 
-      for (const [group, items] of Object.entries(dayTasks)) {
-        const groupEl = document.createElement('div');
-        groupEl.className = 'task-group';
-        const header = document.createElement('h2');
-        header.textContent = group;
-        groupEl.appendChild(header);
+        Object.entries(dayTasks).forEach(([group, items]) => {
+          const groupEl = document.createElement('div');
+          groupEl.className = 'task-group';
+          const header = document.createElement('h2');
+          header.textContent = group;
+          groupEl.appendChild(header);
 
-        const ul = document.createElement('ul');
-        items.forEach((task, idx) => {
-          const id = `${dayKey}-${group}-${idx}`;
-          const li = document.createElement('li');
-          li.className = 'task-item';
+          const ul = document.createElement('ul');
+          items.forEach((task, idx) => {
+            const id = `${dayKey}-${idx}`;
+            const li = document.createElement('li');
+            li.className = 'task-item';
 
-          const chk = document.createElement('input');
-          chk.type = 'checkbox';
-          chk.id = id;
-          chk.checked = JSON.parse(localStorage.getItem(id) || false);
-          chk.addEventListener('change', () => {
-            localStorage.setItem(id, chk.checked);
-            li.classList.toggle('completed', chk.checked);
-            // move completed to bottom
-            if (chk.checked) ul.appendChild(li);
-            else ul.insertBefore(li, ul.children[idx]);
+            const chk = document.createElement('input');
+            chk.type = 'checkbox';
+            chk.id = id;
+            chk.checked = JSON.parse(localStorage.getItem(id) || false);
+            chk.addEventListener('change', () => {
+              localStorage.setItem(id, chk.checked);
+              li.classList.toggle('completed', chk.checked);
+              // reposition
+              if (chk.checked) ul.appendChild(li);
+              else ul.insertBefore(li, ul.children[idx]);
+            });
+
+            const label = document.createElement('label');
+            label.htmlFor = id;
+            label.innerHTML = `${task}`;
+
+            li.appendChild(chk);
+            li.appendChild(label);
+            if (chk.checked) li.classList.add('completed');
+            ul.appendChild(li);
           });
-
-          const label = document.createElement('label');
-          label.htmlFor = id;
-          label.innerHTML = `<i data-lucide=\"circle\"></i> ${task}`;
-
-          li.appendChild(chk);
-          li.appendChild(label);
-          if (chk.checked) li.classList.add('completed');
-          ul.appendChild(li);
+          groupEl.appendChild(ul);
+          container.appendChild(groupEl);
         });
-        groupEl.appendChild(ul);
-        container.appendChild(groupEl);
+        lucide.replace();
       }
-      lucide.replace();
-    }
 
-    navPrev.addEventListener('click', () => { currentDate.setDate(currentDate.getDate() -1); renderTasks(); });
-    navNext.addEventListener('click', () => { currentDate.setDate(currentDate.getDate() +1); renderTasks(); });
+      navPrev.addEventListener('click', () => {
+        currentDate.setDate(currentDate.getDate() - 1);
+        renderTasks();
+      });
+      navNext.addEventListener('click', () => {
+        currentDate.setDate(currentDate.getDate() + 1);
+        renderTasks();
+      });
 
-    renderTasks();
+      renderTasks();
+    });
   </script>
 </body>
 </html>
