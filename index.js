@@ -12,3 +12,9 @@ const Boundary = window.ErrorBoundary || React.Fragment;
 
 root.render(createElement(Boundary, null, createElement(App)));
 
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js');
+  });
+}
+
