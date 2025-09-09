@@ -52,7 +52,7 @@ function Button(props) {
     "button",
     Object.assign({
       className:
-        "px-3 py-1 rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors " +
+        "px-4 py-2 rounded bg-brand-500 text-white hover:bg-brand-600 transition-colors " +
         className,
     }, rest)
   );
@@ -63,8 +63,7 @@ function Card(props) {
   return React.createElement(
     "div",
     Object.assign({
-      className:
-        "bg-white rounded-lg shadow p-4 flex flex-col gap-2 " + className,
+      className: "bg-white rounded shadow p-4 flex flex-col gap-4 " + className,
     }, rest)
   );
 }
@@ -76,7 +75,7 @@ function Checkbox(props) {
       {
         type: "checkbox",
         className:
-          "mr-3 h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 transition"
+          "mr-3 h-5 w-5 rounded border-gray-300 text-brand-600 focus:ring-brand-500 transition"
       },
       props
     )
@@ -105,7 +104,7 @@ function TaskItem(_ref) {
     "li",
     {
       className:
-        "flex items-center rounded border p-3 bg-gray-50 transition-all list-none " +
+        "flex items-center rounded border p-4 bg-gray-50 transition-all list-none " +
         (checked ? "opacity-60 line-through" : "hover:bg-gray-100"),
     },
     React.createElement(Checkbox, {
@@ -144,7 +143,7 @@ function TaskGroup(_ref2) {
     React.createElement(
       "h2",
       {
-        className: "font-semibold mb-1",
+        className: "font-semibold mb-2 text-brand-600",
         style: { color: accent },
       },
       title
@@ -217,7 +216,7 @@ function StreakHistory(_ref3) {
     },
     React.createElement(
       "div",
-      { className: "bg-white rounded-lg p-4 w-80 shadow" },
+      { className: "bg-white rounded p-4 w-80 shadow" },
       React.createElement(
         "h3",
         { className: "text-center font-bold mb-2" },
@@ -317,7 +316,7 @@ function App() {
       "div",
       {
         className:
-          "flex items-center justify-center gap-1 bg-orange-100 text-orange-600 font-bold py-2",
+          "flex items-center justify-center gap-1 bg-brand-100 text-brand-600 font-bold py-2",
       },
       "\uD83D\uDD25",
       React.createElement("span", null, streak)
