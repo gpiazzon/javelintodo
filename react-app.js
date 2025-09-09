@@ -3,6 +3,14 @@
 
 const { useState, useEffect, useMemo, useCallback } = React;
 
+// Ensure task lists render without bullets even if external CSS fails to load
+if (typeof document !== "undefined" && !document.getElementById("task-list-style")) {
+  const style = document.createElement("style");
+  style.id = "task-list-style";
+  style.textContent = ".task-list{list-style-type:none;padding-left:0;}";
+  document.head.appendChild(style);
+}
+
 // --------------------------------------------------------------
 // Persistent state backed by localStorage
 // --------------------------------------------------------------
@@ -157,7 +165,7 @@ function TaskGroup(_ref2) {
       ),
     React.createElement(
       "ul",
-      { className: "list-none flex flex-col gap-2" },
+      { className: "task-list flex flex-col gap-2" },
       items.map(function (task, i) {
         var id = dayKey + "-" + title + "-" + i;
         var _usePersistentState = usePersistentState(id, false),
