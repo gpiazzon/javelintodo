@@ -4,12 +4,12 @@ const FILES_TO_CACHE = [
   'index.html',
   'task-editor.html',
   'settings.html',
-  'style.css',
   'react-app.js',
   'manifest.json',
   'sw.js',
   'tasks.js',
   'https://cdn.jsdelivr.net/npm/lucide@latest/dist/lucide.min.js',
+  'https://cdn.jsdelivr.net/npm/tailwindcss@^3/dist/tailwind.min.css',
   'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js'
 ];
 self.addEventListener('install', evt => {
