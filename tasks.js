@@ -239,3 +239,7 @@ function saveNewTasks(dayKey, tasks) {
   hist[dayKey].push({ start: today, tasks });
   saveTaskHistory(hist);
 }
+
+// Expose key utilities globally for modules
+window.getTasksFor = getTasksFor;
+window.motivationByDay = motivationByDay;
