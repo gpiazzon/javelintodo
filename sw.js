@@ -1,4 +1,4 @@
-const CACHE_NAME = 'javelin-checklist-v1';
+const CACHE_NAME = 'javelin-checklist-v2';
 const FILES_TO_CACHE = [
   '.',
   'index.html',
@@ -9,8 +9,10 @@ const FILES_TO_CACHE = [
   'sw.js',
   'tasks.js',
   'https://cdn.jsdelivr.net/npm/lucide@latest/dist/lucide.min.js',
+
   'https://cdn.jsdelivr.net/npm/tailwindcss@^3/dist/tailwind.min.css',
   'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js'
+
 ];
 self.addEventListener('install', evt => {
   evt.waitUntil(

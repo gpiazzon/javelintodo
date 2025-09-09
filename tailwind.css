@@ -1,0 +1,6 @@
+/* Compiled Tailwind CSS placeholder. */
+/* Run `npx tailwindcss -i input.css -o tailwind.css --minify` to generate the full file. */
+
+body {
+  font-family: 'Nunito', ui-sans-serif, system-ui, sans-serif;
+}

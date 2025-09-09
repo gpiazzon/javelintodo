@@ -3,6 +3,14 @@
 
 const { useState, useEffect, useMemo, useCallback } = React;
 
+// Ensure task lists render without bullets even if external CSS fails to load
+if (typeof document !== "undefined" && !document.getElementById("task-list-style")) {
+  const style = document.createElement("style");
+  style.id = "task-list-style";
+  style.textContent = ".task-list{list-style-type:none;padding-left:0;}";
+  document.head.appendChild(style);
+}
+
 // --------------------------------------------------------------
 // Persistent state backed by localStorage
 // --------------------------------------------------------------
@@ -52,7 +60,7 @@ function Button(props) {
     "button",
     Object.assign({
       className:
-        "px-3 py-1 rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors " +
+        "px-4 py-2 rounded bg-brand-500 text-white hover:bg-brand-600 transition-colors " +
         className,
     }, rest)
   );
@@ -63,8 +71,7 @@ function Card(props) {
   return React.createElement(
     "div",
     Object.assign({
-      className:
-        "bg-white rounded-lg shadow p-4 flex flex-col gap-2 " + className,
+      className: "bg-white rounded shadow p-4 flex flex-col gap-4 " + className,
     }, rest)
   );
 }
@@ -76,7 +83,7 @@ function Checkbox(props) {
       {
         type: "checkbox",
         className:
-          "mr-3 h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 transition"
+          "mr-3 h-5 w-5 rounded border-gray-300 text-brand-600 focus:ring-brand-500 transition"
       },
       props
     )
@@ -105,7 +112,7 @@ function TaskItem(_ref) {
     "li",
     {
       className:
-        "flex items-center rounded border p-3 bg-gray-50 transition-all list-none " +
+        "flex items-center rounded border p-4 bg-gray-50 transition-all list-none " +
         (checked ? "opacity-60 line-through" : "hover:bg-gray-100"),
     },
     React.createElement(Checkbox, {
@@ -144,7 +151,7 @@ function TaskGroup(_ref2) {
     React.createElement(
       "h2",
       {
-        className: "font-semibold mb-1",
+        className: "font-semibold mb-2 text-brand-600",
         style: { color: accent },
       },
       title
@@ -157,7 +164,7 @@ function TaskGroup(_ref2) {
       ),
     React.createElement(
       "ul",
-      { className: "list-none flex flex-col gap-2" },
+      { className: "task-list flex flex-col gap-2" },
       items.map(function (task, i) {
         var id = dayKey + "-" + title + "-" + i;
         var _usePersistentState = usePersistentState(id, false),
@@ -217,7 +224,7 @@ function StreakHistory(_ref3) {
     },
     React.createElement(
       "div",
-      { className: "bg-white rounded-lg p-4 w-80 shadow" },
+      { className: "bg-white rounded p-4 w-80 shadow" },
       React.createElement(
         "h3",
         { className: "text-center font-bold mb-2" },
@@ -317,7 +324,7 @@ function App() {
       "div",
       {
         className:
-          "flex items-center justify-center gap-1 bg-orange-100 text-orange-600 font-bold py-2",
+          "flex items-center justify-center gap-1 bg-brand-100 text-brand-600 font-bold py-2",
       },
       "\uD83D\uDD25",
       React.createElement("span", null, streak)
@@ -328,26 +335,35 @@ function App() {
       "header",
       {
         className:
-          "sticky top-0 z-10 bg-white flex items-center justify-between shadow p-4",
+          "sticky top-0 z-10 flex items-center shadow bg-background px-4 py-2 gap-2",
       },
-      React.createElement(Button, {
-        className: "bg-transparent text-xl", // prev
-        onClick: prevDay,
-        "aria-label": "Previous day",
-      }, "\u2B05\uFE0F"),
-      React.createElement("h1", {
-        className: "font-bold text-lg text-center flex-1",
-      }, dateLabel),
       React.createElement(
         "div",
-        { className: "flex items-center gap-2" },
+        { className: "flex items-center w-24" },
         React.createElement(Button, {
-          className: "bg-transparent text-xl",
+          className:
+            "bg-transparent text-xl text-foreground p-2 hover:bg-muted rounded",
+          onClick: prevDay,
+          "aria-label": "Previous day",
+        }, "\u2B05\uFE0F")
+      ),
+      React.createElement(
+        "h1",
+        { className: "flex-grow text-center font-bold text-lg" },
+        dateLabel
+      ),
+      React.createElement(
+        "div",
+        { className: "flex items-center justify-end w-24 gap-2" },
+        React.createElement(Button, {
+          className:
+            "bg-transparent text-xl text-foreground p-2 hover:bg-muted rounded",
           onClick: nextDay,
           "aria-label": "Next day",
         }, "\u27A1\uFE0F"),
         React.createElement(Button, {
-          className: "bg-transparent text-xl", // history
+          className:
+            "bg-transparent text-xl text-foreground p-2 hover:bg-muted rounded",
           onClick: function onClick() {
             return setShowHistory(true);
           },
@@ -355,7 +371,10 @@ function App() {
         }, "\uD83D\uDCC5"),
         React.createElement(
           "a",
-          { href: "settings.html", className: "text-xl" },
+          {
+            href: "settings.html",
+            className: "p-2 text-xl text-foreground rounded hover:bg-muted",
+          },
           "\u2699\uFE0F"
         )
       )
