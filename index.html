@@ -31,7 +31,10 @@
   <body class="bg-gray-100 text-gray-900">
     <div id="root"></div>
 
-    <!-- Your app entrypoint -->
-    <script type="module" src="./index.js"></script>
+    <!-- App components must load before index.js -->
+<script type="module" src="./react-app.js"></script>
+<script type="module" src="./ErrorBoundary.js"></script>
+<script type="module" src="./index.js"></script>
+
   </body>
 </html>
