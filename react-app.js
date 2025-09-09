@@ -328,26 +328,35 @@ function App() {
       "header",
       {
         className:
-          "sticky top-0 z-10 bg-white flex items-center justify-between shadow p-4",
+          "sticky top-0 z-10 flex items-center shadow bg-background px-4 py-2 gap-2",
       },
-      React.createElement(Button, {
-        className: "bg-transparent text-xl", // prev
-        onClick: prevDay,
-        "aria-label": "Previous day",
-      }, "\u2B05\uFE0F"),
-      React.createElement("h1", {
-        className: "font-bold text-lg text-center flex-1",
-      }, dateLabel),
       React.createElement(
         "div",
-        { className: "flex items-center gap-2" },
+        { className: "flex items-center w-24" },
         React.createElement(Button, {
-          className: "bg-transparent text-xl",
+          className:
+            "bg-transparent text-xl text-foreground p-2 hover:bg-muted rounded",
+          onClick: prevDay,
+          "aria-label": "Previous day",
+        }, "\u2B05\uFE0F")
+      ),
+      React.createElement(
+        "h1",
+        { className: "flex-grow text-center font-bold text-lg" },
+        dateLabel
+      ),
+      React.createElement(
+        "div",
+        { className: "flex items-center justify-end w-24 gap-2" },
+        React.createElement(Button, {
+          className:
+            "bg-transparent text-xl text-foreground p-2 hover:bg-muted rounded",
           onClick: nextDay,
           "aria-label": "Next day",
         }, "\u27A1\uFE0F"),
         React.createElement(Button, {
-          className: "bg-transparent text-xl", // history
+          className:
+            "bg-transparent text-xl text-foreground p-2 hover:bg-muted rounded",
           onClick: function onClick() {
             return setShowHistory(true);
           },
@@ -355,7 +364,10 @@ function App() {
         }, "\uD83D\uDCC5"),
         React.createElement(
           "a",
-          { href: "settings.html", className: "text-xl" },
+          {
+            href: "settings.html",
+            className: "p-2 text-xl text-foreground rounded hover:bg-muted",
+          },
           "\u2699\uFE0F"
         )
       )
