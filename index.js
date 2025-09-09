@@ -1,15 +1,14 @@
-// React and ReactDOM are available globally from the UMD scripts in index.html
+// index.js - mounts the App with ErrorBoundary using global React
 const { createElement } = React;
 const { createRoot } = ReactDOM;
 
 const container = document.getElementById("root");
 const root = createRoot(container);
 
-// Render App wrapped in ErrorBoundary
-root.render(
-  createElement(
-    window.ErrorBoundary || React.Fragment, // fallback if ErrorBoundary missing
-    null,
-    createElement(window.App)
-  )
-);
+const App = window.App || function () {
+  return createElement("div", null, "App not found");
+};
+const Boundary = window.ErrorBoundary || React.Fragment;
+
+root.render(createElement(Boundary, null, createElement(App)));
+
