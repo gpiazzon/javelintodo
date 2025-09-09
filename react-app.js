@@ -1,3 +1,4 @@
+import { Circle } from "lucide-react";
 const { useState, useEffect } = React;
 
 const defaultTasksByDay = {
@@ -184,9 +185,12 @@ function usePersistentState(key, defaultValue) {
 
 function TaskItem({ id, label, checked, onChange }) {
   return (
-    <li className={`flex items-center border-b last:border-0 p-3 ${checked ? 'opacity-60' : ''}`}> 
+    <li className={`flex items-center border-b last:border-0 p-3 ${checked ? 'opacity-60' : ''}`}>
       <input type="checkbox" className="mr-2 h-5 w-5 accent-blue-500" id={id} checked={checked} onChange={e => onChange(e.target.checked)} />
-      <label htmlFor={id} className="flex-1" dangerouslySetInnerHTML={{__html: `<i data-lucide='circle'></i> ${label}`}}></label>
+      <label htmlFor={id} className="flex-1 flex items-center gap-2">
+        <Circle size={16} />
+        {label}
+      </label>
     </li>
   );
 }
@@ -200,7 +204,6 @@ function TaskGroup({ title, note, items, dayKey }) {
         {items.map((task, i) => {
           const id = `${dayKey}-${title}-${i}`;
           const [checked, setChecked] = usePersistentState(id, false);
-          useEffect(() => { if (checked) lucide.replace(); }, [checked]);
           const handleChange = val => {
             setChecked(val);
             if (val) confetti({ particleCount: 30, spread: 55, origin: { y: 0.6 } });
@@ -221,7 +224,6 @@ function App() {
   const nextDay = () => setDate(d => new Date(d.getTime() + 86400000));
   const prevDay = () => setDate(d => new Date(d.getTime() - 86400000));
 
-  useEffect(() => { lucide.replace(); }, [date]);
 
   return (
     <div>
@@ -240,4 +242,4 @@ function App() {
   );
 }
 
-ReactDOM.render(<App />, document.getElementById('root'));
+export default App;
