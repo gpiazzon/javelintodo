@@ -319,63 +319,89 @@ function App() {
   return React.createElement(
     "div",
     null,
-    // Streak bar
-    React.createElement(
-      "div",
-      {
-        className:
-          "flex items-center justify-center gap-1 bg-brand-100 text-brand-600 font-bold py-2",
-      },
-      "\uD83D\uDD25",
-      React.createElement("span", null, streak)
-    ),
-
-    // Header with navigation
+    // Header with streak and navigation
     React.createElement(
       "header",
       {
-        className:
-          "sticky top-0 z-10 flex items-center shadow bg-background px-4 py-2 gap-2",
+        className: "sticky top-0 z-10 shadow text-white",
+        style: { backgroundColor: accent },
       },
+      // Top row
       React.createElement(
         "div",
-        { className: "flex items-center w-24" },
-        React.createElement(Button, {
-          className:
-            "bg-transparent text-xl text-foreground p-2 hover:bg-muted rounded",
-          onClick: prevDay,
-          "aria-label": "Previous day",
-        }, "\u2B05\uFE0F")
-      ),
-      React.createElement(
-        "h1",
-        { className: "flex-grow text-center font-bold text-lg" },
-        dateLabel
-      ),
-      React.createElement(
-        "div",
-        { className: "flex items-center justify-end w-24 gap-2" },
-        React.createElement(Button, {
-          className:
-            "bg-transparent text-xl text-foreground p-2 hover:bg-muted rounded",
-          onClick: nextDay,
-          "aria-label": "Next day",
-        }, "\u27A1\uFE0F"),
-        React.createElement(Button, {
-          className:
-            "bg-transparent text-xl text-foreground p-2 hover:bg-muted rounded",
-          onClick: function onClick() {
-            return setShowHistory(true);
-          },
-          "aria-label": "Streak history",
-        }, "\uD83D\uDCC5"),
+        { className: "flex items-center px-4 py-2" },
         React.createElement(
-          "a",
-          {
-            href: "settings.html",
-            className: "p-2 text-xl text-foreground rounded hover:bg-muted",
-          },
-          "\u2699\uFE0F"
+          "div",
+          { className: "flex items-center w-24" },
+          React.createElement(
+            Button,
+            {
+              className:
+                "bg-transparent text-white p-2 hover:bg-white/20 rounded flex items-center gap-1 font-bold",
+              onClick: function onClick() {
+                return setShowHistory(true);
+              },
+              "aria-label": "Streak history",
+            },
+            "\uD83D\uDD25",
+            React.createElement("span", null, streak)
+          )
+        ),
+        React.createElement(
+          "h1",
+          { className: "flex-grow text-center font-bold text-lg" },
+          "Jav Trainer"
+        ),
+        React.createElement(
+          "div",
+          { className: "flex items-center justify-end w-24" },
+          React.createElement(
+            "a",
+            {
+              href: "settings.html",
+              className: "p-2 text-xl rounded hover:bg-white/20",
+              "aria-label": "Settings",
+            },
+            "\u2699\uFE0F"
+          )
+        )
+      ),
+      // Bottom row with date navigation
+      React.createElement(
+        "div",
+        { className: "flex items-center px-4 py-2" },
+        React.createElement(
+          "div",
+          { className: "flex items-center w-24" },
+          React.createElement(
+            Button,
+            {
+              className:
+                "bg-transparent text-white p-2 hover:bg-white/20 rounded text-xl",
+              onClick: prevDay,
+              "aria-label": "Previous day",
+            },
+            "\u2B05\uFE0F"
+          )
+        ),
+        React.createElement(
+          "h2",
+          { className: "flex-grow text-center font-bold text-lg" },
+          dateLabel
+        ),
+        React.createElement(
+          "div",
+          { className: "flex items-center justify-end w-24" },
+          React.createElement(
+            Button,
+            {
+              className:
+                "bg-transparent text-white p-2 hover:bg-white/20 rounded text-xl",
+              onClick: nextDay,
+              "aria-label": "Next day",
+            },
+            "\u27A1\uFE0F"
+          )
         )
       )
     ),
