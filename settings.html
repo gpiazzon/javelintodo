@@ -9,30 +9,68 @@
     rel="stylesheet"
   />
 </head>
-<body class="bg-gray-100 text-gray-900">
+<body class="bg-gray-100 text-gray-900 font-sans">
   <header class="sticky top-0 z-10 bg-white flex items-center justify-between shadow p-4">
-    <a href="index.html" class="text-xl" aria-label="Back">⬅️</a>
+    <a href="index.html" class="text-xl font-bold hover:text-blue-600">⬅️</a>
     <h1 class="font-bold text-lg text-center flex-1">Settings</h1>
   </header>
 
   <main class="p-6 space-y-6 max-w-3xl mx-auto">
-    <!-- Workout Type + Workouts -->
+    <!-- Day / Accent -->
     <div class="bg-white rounded-xl shadow p-4 space-y-4">
-      <h2 class="font-semibold text-lg">Workout Library</h2>
-      <div id="workout-types" class="space-y-4"></div>
-      <button id="add-type-btn"
-        class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">+ Add Workout Type</button>
+      <h2 class="font-semibold text-lg text-gray-800">Day Settings</h2>
+      <div>
+        <label for="day-select" class="block text-sm font-medium">Choose Day</label>
+        <select id="day-select" class="w-full border rounded-md p-2 mt-1">
+          <option value="monday">Monday</option>
+          <option value="tuesday">Tuesday</option>
+          <option value="wednesday">Wednesday</option>
+          <option value="thursday">Thursday</option>
+          <option value="friday">Friday</option>
+          <option value="saturday">Saturday</option>
+          <option value="sunday">Sunday</option>
+        </select>
+      </div>
+      <div>
+        <label for="accent-input" class="block text-sm font-medium">Accent color</label>
+        <input type="color" id="accent-input" class="w-16 h-10 border rounded mt-1" />
+      </div>
     </div>
 
-    <!-- Weekly Split -->
-    <div class="bg-white rounded-xl shadow p-4 space-y-4">
-      <h2 class="font-semibold text-lg">Weekly Split</h2>
-      <div id="weekly-split" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-      <button id="save-schedule-btn"
-        class="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700">Save Schedule</button>
+    <!-- Workouts JSON editor -->
+    <div class="bg-white rounded-xl shadow p-4 space-y-3">
+      <h2 class="font-semibold text-lg text-gray-800">Workouts</h2>
+      <textarea id="tasks-input" rows="12"
+        class="w-full border rounded-md p-3 font-mono text-sm focus:ring-2 focus:ring-blue-500"></textarea>
+      <button id="save-btn"
+        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Save Tasks</button>
+      <p class="text-xs text-gray-500">Edit tasks as JSON. Changes apply from today forward.</p>
+    </div>
+
+    <!-- Appearance -->
+    <div class="bg-white rounded-xl shadow p-4 space-y-3">
+      <h2 class="font-semibold text-lg text-gray-800">Appearance</h2>
+      <div>
+        <label for="emoji-input" class="block text-sm font-medium">Task emoji</label>
+        <input id="emoji-input" maxlength="2" class="border rounded-md p-2 w-16 text-center mt-1" />
+      </div>
+      <div class="flex items-center gap-2 mt-2">
+        <input type="checkbox" id="quote-toggle" class="border rounded" />
+        <label for="quote-toggle" class="text-sm">Show motivational quote</label>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Confetti colors</label>
+        <div class="flex gap-2 mt-1">
+          <input type="color" id="confetti1" class="w-10 h-8 border rounded" />
+          <input type="color" id="confetti2" class="w-10 h-8 border rounded" />
+        </div>
+      </div>
+      <button id="save-settings-btn"
+        class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Save Settings</button>
     </div>
   </main>
 
   <script src="settings.js"></script>
+  <script src="tasks.js"></script>
 </body>
 </html>
