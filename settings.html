@@ -13,11 +13,16 @@
     <h1 class="font-bold text-lg text-center flex-1">Settings</h1>
   </header>
 
-  <main class="p-6 space-y-6 max-w-4xl mx-auto">
+  <main class="p-6 space-y-6 max-w-5xl mx-auto">
     <!-- Workout Types -->
-    <div class="bg-white rounded-xl shadow p-4 space-y-4">
-      <h2 class="font-semibold text-xl text-gray-800">Workout Library</h2>
-      <p class="text-sm text-gray-600">Define your workouts by type (Gym, WOD, Mobility, Tendon). Add exercises under each workout.</p>
+    <div class="bg-white rounded-xl shadow p-5 space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="font-semibold text-xl text-gray-800">Workout Library</h2>
+        <button id="reset-config" class="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+          Reset to Default
+        </button>
+      </div>
+      <p class="text-sm text-gray-600">Create workout types (e.g. Gym, WOD, Mobility, Javelin). Inside each type, add workouts with a title and one exercise per line.</p>
       <div id="workout-types" class="space-y-4"></div>
       <button id="add-type-btn"
         class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
@@ -26,9 +31,9 @@
     </div>
 
     <!-- Weekly Split -->
-    <div class="bg-white rounded-xl shadow p-4 space-y-4">
+    <div class="bg-white rounded-xl shadow p-5 space-y-4">
       <h2 class="font-semibold text-xl text-gray-800">Weekly Schedule</h2>
-      <p class="text-sm text-gray-600">Assign workouts or random picks to each day of the week.</p>
+      <p class="text-sm text-gray-600">Assign fixed workouts or let a slot randomly pick from a workout type.</p>
       <div id="weekly-split" class="grid gap-4 md:grid-cols-2"></div>
       <button id="save-schedule-btn"
         class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors">
@@ -38,5 +43,12 @@
   </main>
 
   <script src="settings.js"></script>
+  <script>
+    // Reset button logic (force seed on next load)
+    document.getElementById('reset-config').onclick = () => {
+      localStorage.removeItem('workoutConfig');
+      location.reload();
+    };
+  </script>
 </body>
 </html>

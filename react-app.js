@@ -247,13 +247,20 @@ function App() {
 
   const groups = Object.entries(tasks);
 
+  // Progress
+  const totalItems = groups.reduce((acc, [,data]) => acc + (data.items?.length || 0), 0);
+  const completedItems = totalItems === 0 ? 0 : groups.reduce((acc, [group, data]) => {
+    return acc + data.items.reduce((a, _, i) => a + (JSON.parse(localStorage.getItem(`${dayKey}-${group}-${i}`)) ? 1 : 0), 0);
+  }, 0);
+  const pct = totalItems ? Math.round((completedItems / totalItems) * 100) : 0;
+
   return React.createElement(
     "div",
     null,
     // Header
     React.createElement(
       "header",
-      { className: "sticky top-0 z-10 shadow text-white", style: { backgroundColor: accent } },
+      { className: "sticky top-0 z-10 shadow text-white bg-gradient-to-r from-emerald-500 to-sky-500" },
       React.createElement(
         "div",
         { className: "flex items-center px-4 py-2" },
@@ -289,6 +296,16 @@ function App() {
         React.createElement("h2", { className: "flex-grow text-center font-bold text-lg" }, dateLabel),
         React.createElement(Button, { className: "bg-transparent text-white p-2", onClick: nextDay }, "➡️")
       )
+    ),
+
+    // Progress bar
+    React.createElement(
+      'div',
+      { className: 'px-4 mt-3' },
+      React.createElement('div', { className: 'w-full bg-gray-200 rounded-full h-3' },
+        React.createElement('div', { className: 'h-3 rounded-full bg-emerald-500 transition-all', style: { width: pct + '%' } })
+      ),
+      React.createElement('div', { className: 'text-right text-sm text-gray-600 mt-1' }, pct + '%')
     ),
 
     // Tasks
