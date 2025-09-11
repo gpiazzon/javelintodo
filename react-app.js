@@ -1,26 +1,18 @@
 // react-app.js - UMD-friendly React app using only React.createElement
-// Globals: React, loadSettings, getTasksFor, motivationByDay, confetti
+// Globals: React, loadSettings, confetti
 
 const { useState, useEffect, useMemo, useCallback } = React;
-
-// Ensure task lists render without bullets even if external CSS fails to load
-if (typeof document !== "undefined" && !document.getElementById("task-list-style")) {
-  const style = document.createElement("style");
-  style.id = "task-list-style";
-  style.textContent = ".task-list{list-style-type:none;padding-left:0;}";
-  document.head.appendChild(style);
-}
 
 // --------------------------------------------------------------
 // Persistent state backed by localStorage
 // --------------------------------------------------------------
 function usePersistentState(key, defaultValue) {
-  const [value, setValue] = useState(function () {
+  const [value, setValue] = useState(() => {
     const stored = localStorage.getItem(key);
     return stored ? JSON.parse(stored) : defaultValue;
   });
 
-  useEffect(function () {
+  useEffect(() => {
     localStorage.setItem(key, JSON.stringify(value));
   }, [key, value]);
 
@@ -36,13 +28,11 @@ function useStreakTracker() {
   const [lastDate, setLastDate] = usePersistentState("streakLastDate", null);
   const [history, setHistory] = usePersistentState("streakHistory", {});
 
-  const markComplete = useCallback(function () {
-    if (history[today]) return; // already counted for today
-    const yesterday = new Date(Date.now() - 86400000)
-      .toISOString()
-      .split("T")[0];
+  const markComplete = useCallback(() => {
+    if (history[today]) return; // already counted
+    const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
     const nextStreak = lastDate === yesterday ? streak + 1 : 1;
-    const newHistory = Object.assign({}, history, { [today]: true });
+    const newHistory = { ...history, [today]: true };
     setHistory(newHistory);
     setStreak(nextStreak);
     setLastDate(today);
@@ -52,135 +42,89 @@ function useStreakTracker() {
 }
 
 // --------------------------------------------------------------
-// Basic shadcn/ui like primitives (Tailwind styled)
+// Tailwind primitives
 // --------------------------------------------------------------
 function Button(props) {
   const { className = "", ...rest } = props;
-  return React.createElement(
-    "button",
-    Object.assign({
-      className:
-        "px-4 py-2 rounded bg-brand-500 text-white hover:bg-brand-600 transition-colors " +
-        className,
-    }, rest)
-  );
+  return React.createElement("button", {
+    className:
+      "px-3 py-2 rounded bg-brand-500 text-white hover:bg-brand-600 transition-colors " +
+      className,
+    ...rest,
+  });
 }
 
 function Card(props) {
-  const { className = "", ...rest } = props;
-  return React.createElement(
-    "div",
-    Object.assign({
-      className: "bg-white rounded shadow p-4 flex flex-col gap-4 " + className,
-    }, rest)
-  );
+  return React.createElement("div", {
+    className: "bg-white rounded shadow p-4 flex flex-col gap-4 " + (props.className || ""),
+    ...props,
+  });
 }
 
 function Checkbox(props) {
-  return React.createElement(
-    "input",
-    Object.assign(
-      {
-        type: "checkbox",
-        className:
-          "mr-3 h-5 w-5 rounded border-gray-300 text-brand-600 focus:ring-brand-500 transition"
-      },
-      props
-    )
-  );
+  return React.createElement("input", {
+    type: "checkbox",
+    className:
+      "mr-3 h-5 w-5 rounded border-gray-300 text-brand-600 focus:ring-brand-500 transition",
+    ...props,
+  });
 }
 
 function Label(props) {
-  const { className = "", ...rest } = props;
-  return React.createElement(
-    "label",
-    Object.assign(
-      {
-        className: "select-none " + className,
-      },
-      rest
-    )
-  );
+  return React.createElement("label", {
+    className: "select-none " + (props.className || ""),
+    ...props,
+  });
 }
 
 // --------------------------------------------------------------
-// Individual task item
+// Task components
 // --------------------------------------------------------------
-function TaskItem(_ref) {
-  const { id, label, checked, onChange, emoji } = _ref;
+function TaskItem({ id, label, checked, onChange, emoji }) {
   return React.createElement(
     "li",
     {
       className:
-        "flex items-center rounded border p-4 bg-gray-50 transition-all list-none " +
+        "flex items-center rounded border p-2 bg-gray-50 transition-all list-none " +
         (checked ? "opacity-60 line-through" : "hover:bg-gray-100"),
     },
     React.createElement(Checkbox, {
-      id: id,
-      checked: checked,
-      onChange: function (e) {
-        return onChange(e.target.checked);
-      },
+      id,
+      checked,
+      onChange: (e) => onChange(e.target.checked),
     }),
     React.createElement(
       Label,
       { htmlFor: id, className: "flex-1 flex items-center" },
       emoji && React.createElement("span", { className: "mr-2" }, emoji),
-      React.createElement("span", {
-        dangerouslySetInnerHTML: { __html: label },
-      })
+      React.createElement("span", null, label)
     )
   );
 }
 
-// --------------------------------------------------------------
-// Group of related tasks
-// --------------------------------------------------------------
-function TaskGroup(_ref2) {
-  var title = _ref2.title,
-    note = _ref2.note,
-    items = _ref2.items,
-    dayKey = _ref2.dayKey,
-    emoji = _ref2.emoji,
-    accent = _ref2.accent,
-    onItemChange = _ref2.onItemChange;
-
+function TaskGroup({ title, note, items, dayKey, emoji, accent, onItemChange }) {
   return React.createElement(
     Card,
     null,
-    React.createElement(
-      "h2",
-      {
-        className: "font-semibold mb-2 text-brand-600",
-        style: { color: accent },
-      },
-      title
-    ),
-    note &&
-      React.createElement(
-        "p",
-        { className: "italic text-gray-600 text-sm" },
-        note
-      ),
+    React.createElement("h2", { className: "font-semibold mb-2", style: { color: accent } }, title),
+    note && React.createElement("p", { className: "italic text-gray-600 text-sm" }, note),
     React.createElement(
       "ul",
       { className: "task-list flex flex-col gap-2" },
-      items.map(function (task, i) {
-        var id = dayKey + "-" + title + "-" + i;
-        var _usePersistentState = usePersistentState(id, false),
-          checked = _usePersistentState[0],
-          setChecked = _usePersistentState[1];
-        var handle = function handle(val) {
+      items.map((task, i) => {
+        const id = `${dayKey}-${title}-${i}`;
+        const [checked, setChecked] = usePersistentState(id, false);
+        const handle = (val) => {
           setChecked(val);
           onItemChange();
         };
         return React.createElement(TaskItem, {
           key: i,
-          id: id,
+          id,
           label: task,
-          checked: checked,
+          checked,
           onChange: handle,
-          emoji: emoji,
+          emoji,
         });
       })
     )
@@ -190,105 +134,100 @@ function TaskGroup(_ref2) {
 // --------------------------------------------------------------
 // Streak history calendar overlay
 // --------------------------------------------------------------
-function StreakHistory(_ref3) {
-  var history = _ref3.history,
-    onClose = _ref3.onClose;
-
-  var today = new Date();
-  var cells = [];
-  for (var i = 29; i >= 0; i--) {
-    var d = new Date(today.getTime() - i * 86400000);
-    var key = d.toISOString().split("T")[0];
-    var completed = !!history[key];
+function StreakHistory({ history, onClose }) {
+  const today = new Date();
+  const cells = [];
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(today.getTime() - i * 86400000);
+    const key = d.toISOString().split("T")[0];
+    const completed = !!history[key];
     cells.push(
       React.createElement(
         "div",
         {
-          key: key,
+          key,
           className:
             "h-8 w-8 flex items-center justify-center rounded text-sm " +
-            (completed
-              ? "bg-green-300 text-green-800"
-              : "bg-gray-200 text-gray-500"),
+            (completed ? "bg-green-300 text-green-800" : "bg-gray-200 text-gray-500"),
         },
-        completed ? "\u2714\uFE0F" : d.getDate()
+        completed ? "✔️" : d.getDate()
       )
     );
   }
 
   return React.createElement(
     "div",
-    {
-      className:
-        "fixed inset-0 bg-black/50 flex items-center justify-center z-20",
-    },
+    { className: "fixed inset-0 bg-black/50 flex items-center justify-center z-20" },
     React.createElement(
       "div",
       { className: "bg-white rounded p-4 w-80 shadow" },
-      React.createElement(
-        "h3",
-        { className: "text-center font-bold mb-2" },
-        "Streak History"
-      ),
-      React.createElement(
-        "div",
-        { className: "grid grid-cols-7 gap-2" },
-        cells
-      ),
-      React.createElement(
-        Button,
-        { className: "mt-4 w-full", onClick: onClose },
-        "Close"
-      )
+      React.createElement("h3", { className: "text-center font-bold mb-2" }, "Streak History"),
+      React.createElement("div", { className: "grid grid-cols-7 gap-2" }, cells),
+      React.createElement(Button, { className: "mt-4 w-full", onClick: onClose }, "Close")
     )
   );
+}
+
+// --------------------------------------------------------------
+// Task Loader from workoutConfig
+// --------------------------------------------------------------
+function getTasksForDay(dayKey) {
+  const cfg = JSON.parse(localStorage.getItem("workoutConfig") || "{}");
+  const slots = cfg.schedule?.[dayKey] || [];
+
+  let workouts = {};
+  slots.forEach((slot) => {
+    const [type, sel] = slot.split(":");
+    const list = cfg.types?.[type] || [];
+    let workout;
+    if (sel === "random") {
+      if (list.length > 0) workout = list[Math.floor(Math.random() * list.length)];
+    } else {
+      workout = list[parseInt(sel, 10)];
+    }
+    if (workout) {
+      workouts[workout.title] = { note: workout.note || "", items: workout.items || [] };
+    }
+  });
+
+  if (cfg.tendon_snacks) {
+    workouts[cfg.tendon_snacks.title] = {
+      note: cfg.tendon_snacks.note || "",
+      items: cfg.tendon_snacks.items || [],
+    };
+  }
+
+  return workouts;
 }
 
 // --------------------------------------------------------------
 // Main application component
 // --------------------------------------------------------------
 function App() {
-  var _useState = useState(new Date()),
-    date = _useState[0],
-    setDate = _useState[1];
-  var _useState2 = useState(function () {
-      return typeof loadSettings === "function" ? loadSettings() : {};
-    }),
-    settings = _useState2[0];
+  const [date, setDate] = useState(new Date());
+  const [settings] = useState(() => (typeof loadSettings === "function" ? loadSettings() : {}));
+  const [showHistory, setShowHistory] = useState(false);
 
-  var dayKey = date
-    .toLocaleDateString(undefined, { weekday: "long" })
-    .toLowerCase();
-  var tasks = typeof getTasksFor === "function" ? getTasksFor(dayKey, date) : {};
-  var accent = (settings.colors && settings.colors[dayKey]) || "#3b82f6";
+  const dayKey = date.toLocaleDateString(undefined, { weekday: "long" }).toLowerCase();
+  const tasks = getTasksForDay(dayKey);
+  const accent = (settings.colors && settings.colors[dayKey]) || "#3b82f6";
 
-  var _useState3 = useState(false),
-    showHistory = _useState3[0],
-    setShowHistory = _useState3[1];
-
-  var _useStreakTracker = useStreakTracker(),
-    streak = _useStreakTracker.streak,
-    history = _useStreakTracker.history,
-    markComplete = _useStreakTracker.markComplete;
+  const { streak, history, markComplete } = useStreakTracker();
 
   // collect all task ids for completion check
-  var taskIds = useMemo(function () {
-    var ids = [];
-    Object.entries(tasks).forEach(function (_ref4) {
-      var group = _ref4[0],
-        data = _ref4[1];
-      data.items.forEach(function (_, i) {
-        ids.push(dayKey + "-" + group + "-" + i);
+  const taskIds = useMemo(() => {
+    const ids = [];
+    Object.entries(tasks).forEach(([group, data]) => {
+      data.items.forEach((_, i) => {
+        ids.push(`${dayKey}-${group}-${i}`);
       });
     });
     return ids;
   }, [tasks, dayKey]);
 
-  var checkAllComplete = useCallback(function () {
+  const checkAllComplete = useCallback(() => {
     if (!taskIds.length) return;
-    var allDone = taskIds.every(function (id) {
-      return JSON.parse(localStorage.getItem(id));
-    });
+    const allDone = taskIds.every((id) => JSON.parse(localStorage.getItem(id)));
     if (allDone) {
       markComplete();
       if (typeof confetti === "function") {
@@ -297,55 +236,36 @@ function App() {
     }
   }, [taskIds, markComplete]);
 
-  var nextDay = function nextDay() {
-    return setDate(function (d) {
-      return new Date(d.getTime() + 86400000);
-    });
-  };
-  var prevDay = function prevDay() {
-    return setDate(function (d) {
-      return new Date(d.getTime() - 86400000);
-    });
-  };
+  const nextDay = () => setDate((d) => new Date(d.getTime() + 86400000));
+  const prevDay = () => setDate((d) => new Date(d.getTime() - 86400000));
 
-  var dateLabel = date.toLocaleDateString(undefined, {
+  const dateLabel = date.toLocaleDateString(undefined, {
     weekday: "long",
     month: "short",
     day: "numeric",
   });
 
-  var groups = Object.entries(tasks);
+  const groups = Object.entries(tasks);
 
   return React.createElement(
     "div",
     null,
-    // Header with streak and navigation
+    // Header
     React.createElement(
       "header",
-      {
-        className: "sticky top-0 z-10 shadow text-white",
-        style: { backgroundColor: accent },
-      },
-      // Top row
+      { className: "sticky top-0 z-10 shadow text-white", style: { backgroundColor: accent } },
       React.createElement(
         "div",
         { className: "flex items-center px-4 py-2" },
         React.createElement(
-          "div",
-          { className: "flex items-center w-24" },
-          React.createElement(
-            Button,
-            {
-              className:
-                "bg-transparent text-white p-2 hover:bg-white/20 rounded flex items-center gap-1 font-bold",
-              onClick: function onClick() {
-                return setShowHistory(true);
-              },
-              "aria-label": "Streak history",
-            },
-            "\uD83D\uDD25",
-            React.createElement("span", null, streak)
-          )
+          Button,
+          {
+            className:
+              "bg-transparent text-white p-2 hover:bg-white/20 rounded flex items-center gap-1 font-bold",
+            onClick: () => setShowHistory(true),
+          },
+          "🔥",
+          React.createElement("span", null, streak)
         ),
         React.createElement(
           "h1",
@@ -357,102 +277,44 @@ function App() {
           { className: "flex items-center justify-end w-24" },
           React.createElement(
             "a",
-            {
-              href: "settings.html",
-              className: "p-2 text-xl rounded hover:bg-white/20",
-              "aria-label": "Settings",
-            },
-            "\u2699\uFE0F"
+            { href: "settings.html", className: "p-2 text-xl rounded hover:bg-white/20" },
+            "⚙️"
           )
         )
       ),
-      // Bottom row with date navigation
       React.createElement(
         "div",
         { className: "flex items-center px-4 py-2" },
-        React.createElement(
-          "div",
-          { className: "flex items-center w-24" },
-          React.createElement(
-            Button,
-            {
-              className:
-                "bg-transparent text-white p-2 hover:bg-white/20 rounded text-xl",
-              onClick: prevDay,
-              "aria-label": "Previous day",
-            },
-            "\u2B05\uFE0F"
-          )
-        ),
-        React.createElement(
-          "h2",
-          { className: "flex-grow text-center font-bold text-lg" },
-          dateLabel
-        ),
-        React.createElement(
-          "div",
-          { className: "flex items-center justify-end w-24" },
-          React.createElement(
-            Button,
-            {
-              className:
-                "bg-transparent text-white p-2 hover:bg-white/20 rounded text-xl",
-              onClick: nextDay,
-              "aria-label": "Next day",
-            },
-            "\u27A1\uFE0F"
-          )
-        )
+        React.createElement(Button, { className: "bg-transparent text-white p-2", onClick: prevDay }, "⬅️"),
+        React.createElement("h2", { className: "flex-grow text-center font-bold text-lg" }, dateLabel),
+        React.createElement(Button, { className: "bg-transparent text-white p-2", onClick: nextDay }, "➡️")
       )
     ),
 
-    // Quote
-    settings.showQuotes &&
-      React.createElement(
-        "p",
-        { className: "text-center font-semibold mt-4" },
-        (motivationByDay && motivationByDay[dayKey]) || ""
-      ),
-
-    // Tasks or empty state
+    // Tasks
     groups.length
       ? React.createElement(
           "main",
-          {
-            key: dayKey,
-            className: "p-4 grid gap-4 sm:grid-cols-1 md:grid-cols-2",
-          },
-          groups.map(function (_ref5) {
-            var group = _ref5[0],
-              data = _ref5[1];
-            return React.createElement(TaskGroup, {
+          { key: dayKey, className: "p-4 grid gap-4 sm:grid-cols-1 md:grid-cols-2" },
+          groups.map(([group, data]) =>
+            React.createElement(TaskGroup, {
               key: group,
               title: group,
               note: data.note,
               items: data.items,
-              dayKey: dayKey,
+              dayKey,
               emoji: settings.emoji,
-              accent: accent,
+              accent,
               onItemChange: checkAllComplete,
-            });
-          })
+            })
+          )
         )
-      : React.createElement(
-          "div",
-          { className: "p-8 text-center text-2xl" },
-          "\uD83C\uDFF9 Rest day! Keep the fire alive!"
-        ),
+      : React.createElement("div", { className: "p-8 text-center text-2xl" }, "🏹 Rest day!"),
 
     showHistory &&
-      React.createElement(StreakHistory, {
-        history: history,
-        onClose: function onClose() {
-          return setShowHistory(false);
-        },
-      })
+      React.createElement(StreakHistory, { history, onClose: () => setShowHistory(false) })
   );
 }
 
 // expose App globally
 window.App = App;
-
