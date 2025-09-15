@@ -41,9 +41,8 @@ function addCustomTask(task) {
 function getTasksFor(dayKey, date) {
   const hist = loadTaskHistory();
   const plans = hist[dayKey] || [];
-  if (!plans.length) return {};
   const target = date.toISOString().split('T')[0];
-  let result = plans[0].tasks;
+  let result = plans.length ? plans[0].tasks : {};
   for (const p of plans) {
     if (p.start <= target) result = p.tasks; else break;
   }
