@@ -78,7 +78,13 @@ const quotes = {
   saturday: 'Unlock your body\u2019s potential.'
 };
 
-function TaskCard({ id, label, checked, onChange, onDelete }) {
+// Individual task card with its own persisted checkbox state
+function TaskCard({ id, label, onDelete, onCheck }) {
+  const [checked, setChecked] = usePersistentState(id, false);
+  const handleChange = e => {
+    setChecked(e.target.checked);
+    onCheck();
+  };
   return React.createElement(
     'div',
     {
@@ -90,9 +96,12 @@ function TaskCard({ id, label, checked, onChange, onDelete }) {
       type: 'checkbox',
       className: 'mr-3 h-5 w-5',
       checked,
-      onChange: e => onChange(e.target.checked)
+      onChange: handleChange
     }),
-    React.createElement('span', { className: 'flex-1' }, label),
+    React.createElement('span', {
+      className: 'flex-1',
+      dangerouslySetInnerHTML: { __html: label }
+    }),
     React.createElement(
       'button',
       { onClick: onDelete, className: 'ml-2 text-[#8C8C8C]' },
@@ -260,17 +269,11 @@ function App() {
         React.createElement('h3', { className: 'font-semibold mt-4 mb-2' }, group),
         data.items.map((task, i) => {
           const id = `${dayName}-${group}-${i}`;
-          const [checked, setChecked] = usePersistentState(id, false);
-          const handle = val => {
-            setChecked(val);
-            checkAll();
-          };
           return React.createElement(TaskCard, {
             key: i,
             id,
             label: task,
-            checked,
-            onChange: handle,
+            onCheck: checkAll,
             onDelete: () => deleteTask(group, i)
           });
         })
