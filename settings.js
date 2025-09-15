@@ -77,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(e.target.closest('.delete-workout')) {
       const idx = e.target.closest('div[data-index]').dataset.index;
       workouts.splice(idx,1);
+      save(workouts);
       render();
     }
   });
