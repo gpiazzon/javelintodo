@@ -159,7 +159,9 @@ function App() {
   };
 
   const deleteTask = (group, index) => {
-    let removed = null;
+
+    const removed = groups[group]?.items[index];
+
     setGroups(prev => {
       const grp = { ...prev[group] };
       removed = grp.items[index];
