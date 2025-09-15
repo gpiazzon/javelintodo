@@ -1,4 +1,4 @@
-const CACHE_NAME = 'javelin-checklist-v2';
+const CACHE_NAME = 'javelin-checklist-v3';
 const FILES_TO_CACHE = [
   '.',
   'index.html',
@@ -33,3 +33,4 @@ self.addEventListener('fetch', evt => {
     caches.match(evt.request).then(resp => resp || fetch(evt.request))
   );
 });
+
