@@ -68,29 +68,6 @@ function useStreakTracker() {
   return { streak, markComplete };
 }
 
-// --------------------------------------------------------------
-// Load tasks for a given day index
-// --------------------------------------------------------------
-function getTasksForDay(dayIdx) {
-  const list = JSON.parse(localStorage.getItem('workouts') || '[]');
-  const todays = list.filter(w => (w.days || []).includes(dayIdx));
-  const groups = {};
-  const randomGroups = {};
-  todays.forEach(w => {
-    if (w.randomize) {
-      if (!randomGroups[w.name]) randomGroups[w.name] = [];
-      randomGroups[w.name].push(w);
-    } else {
-      groups[w.name] = { items: w.tasks || [] };
-    }
-  });
-  Object.entries(randomGroups).forEach(([name, arr]) => {
-    const chosen = arr[Math.floor(Math.random() * arr.length)];
-    groups[name] = { items: chosen.tasks || [] };
-  });
-  return groups;
-}
-
 const quotes = {
   sunday: 'Rest today, dominate tomorrow.',
   monday: 'New week. New opportunities!',
@@ -133,23 +110,28 @@ function App() {
   const [newTask, setNewTask] = useState('');
   const { streak, markComplete } = useStreakTracker();
 
-  const dayIdx = date.getDay();
   const dayName = date.toLocaleDateString(undefined, { weekday: 'long' }).toLowerCase();
 
   useEffect(() => {
-    setGroups(getTasksForDay(dayIdx));
+    if (typeof getTasksFor === 'function') {
+      setGroups(getTasksFor(dayName, date));
+    } else {
+      setGroups({});
+    }
     setNewTask('');
-  }, [dayIdx]);
+  }, [dayName, date]);
 
   useEffect(() => {
     const handle = e => {
-      if (e.key === 'workouts') {
-        setGroups(getTasksForDay(dayIdx));
+      if (['workouts', 'customTasks', 'taskHistory'].includes(e.key)) {
+        if (typeof getTasksFor === 'function') {
+          setGroups(getTasksFor(dayName, date));
+        }
       }
     };
     window.addEventListener('storage', handle);
     return () => window.removeEventListener('storage', handle);
-  }, [dayIdx]);
+  }, [dayName, date]);
 
   useEffect(() => {
     if (window.lucide) window.lucide.createIcons();

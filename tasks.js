@@ -191,6 +191,10 @@ function loadCustomTasks() {
   return JSON.parse(localStorage.getItem('customTasks') || '[]');
 }
 
+function loadWorkouts() {
+  return JSON.parse(localStorage.getItem('workouts') || '[]');
+}
+
 function saveCustomTasks(tasks) {
   localStorage.setItem('customTasks', JSON.stringify(tasks));
 }
@@ -227,6 +231,22 @@ function getTasksFor(dayKey, date) {
     });
     result['Custom Tasks'] = grp;
   }
+  // Merge in scheduled workouts for this weekday
+  const workouts = loadWorkouts();
+  const todays = workouts.filter(w => Array.isArray(w.days) && w.days.includes(dayNum));
+  const randomGroups = {};
+  todays.forEach(w => {
+    if (w.randomize) {
+      if (!randomGroups[w.name]) randomGroups[w.name] = [];
+      randomGroups[w.name].push(w);
+    } else {
+      result[w.name] = { items: w.tasks || [] };
+    }
+  });
+  Object.entries(randomGroups).forEach(([name, arr]) => {
+    const chosen = arr[Math.floor(Math.random() * arr.length)];
+    result[name] = { items: chosen.tasks || [] };
+  });
   return result;
 }
 
