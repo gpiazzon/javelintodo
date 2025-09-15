@@ -2,7 +2,7 @@ export default {
   content: ["./*.html", "./*.js"],
   theme: {
     fontFamily: {
-      sans: ["Nunito", "ui-sans-serif", "system-ui", "sans-serif"],
+      sans: ["Poppins", "ui-sans-serif", "system-ui", "sans-serif"],
     },
     extend: {
       colors: {
