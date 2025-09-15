@@ -20,16 +20,51 @@ function usePersistentState(key, defaultValue) {
 // --------------------------------------------------------------
 // Streak tracker hook
 // --------------------------------------------------------------
+function showStreakPopup(history) {
+  const overlay = document.createElement('div');
+  overlay.className =
+    'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+  const box = document.createElement('div');
+  box.className = 'bg-white p-4 rounded shadow text-center';
+  const row = document.createElement('div');
+  row.className = 'flex gap-2 mb-2';
+  const today = new Date();
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(today.getTime() - i * 86400000);
+    const key = d.toISOString().split('T')[0];
+    const span = document.createElement('div');
+    span.textContent = d
+      .toLocaleDateString(undefined, { weekday: 'short' })
+      .slice(0, 3);
+    span.className = `px-2 py-1 rounded ${history[key] ? 'bg-green-200' : 'bg-red-200'}`;
+    row.appendChild(span);
+  }
+  const close = document.createElement('button');
+  close.textContent = 'Close';
+  close.className = 'mt-2 px-3 py-1 bg-blue-500 text-white rounded';
+  close.onclick = () => document.body.removeChild(overlay);
+  box.appendChild(row);
+  box.appendChild(close);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+}
+
 function useStreakTracker() {
   const today = new Date().toISOString().split('T')[0];
   const [streak, setStreak] = usePersistentState('streak', 0);
   const [lastDate, setLastDate] = usePersistentState('streakLastDate', null);
+  const [history, setHistory] = usePersistentState('streakHistory', {});
   const markComplete = useCallback(() => {
     const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
     const next = lastDate === yesterday ? streak + 1 : 1;
     setStreak(next);
     setLastDate(today);
-  }, [lastDate, streak, today, setStreak, setLastDate]);
+    setHistory(prev => {
+      const updated = { ...prev, [today]: true };
+      showStreakPopup(updated);
+      return updated;
+    });
+  }, [lastDate, streak, today, setStreak, setLastDate, setHistory]);
   return { streak, markComplete };
 }
 
@@ -107,6 +142,16 @@ function App() {
   }, [dayIdx]);
 
   useEffect(() => {
+    const handle = e => {
+      if (e.key === 'workouts') {
+        setGroups(getTasksForDay(dayIdx));
+      }
+    };
+    window.addEventListener('storage', handle);
+    return () => window.removeEventListener('storage', handle);
+  }, [dayIdx]);
+
+  useEffect(() => {
     if (window.lucide) window.lucide.createIcons();
   });
 
@@ -129,6 +174,7 @@ function App() {
       if (grp.items.length === 0) delete next[group];
       return next;
     });
+    setTimeout(checkAll, 0);
   };
 
   const checkAll = useCallback(() => {
@@ -136,7 +182,10 @@ function App() {
     Object.entries(groups).forEach(([g, data]) => {
       data.items.forEach((_, i) => ids.push(`${dayName}-${g}-${i}`));
     });
-    if (!ids.length) return;
+    if (!ids.length) {
+      markComplete();
+      return;
+    }
     const allDone = ids.every(id => JSON.parse(localStorage.getItem(id)));
     if (allDone) {
       markComplete();
