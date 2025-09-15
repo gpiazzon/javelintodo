@@ -118,6 +118,7 @@ function App() {
   const [groups, setGroups] = useState({});
   const [newTask, setNewTask] = useState('');
   const { streak, markComplete } = useStreakTracker();
+  const [undo, setUndo] = useState(null);
 
   const dayName = date.toLocaleDateString(undefined, { weekday: 'long' }).toLowerCase();
 
@@ -158,6 +159,7 @@ function App() {
   };
 
   const deleteTask = (group, index) => {
+    const removed = groups[group]?.items[index];
     setGroups(prev => {
       const grp = { ...prev[group] };
       grp.items = grp.items.filter((_, i) => i !== index);
@@ -165,6 +167,23 @@ function App() {
       if (grp.items.length === 0) delete next[group];
       return next;
     });
+    setUndo({ group, index, task: removed });
+    setTimeout(checkAll, 0);
+  };
+
+  const undoDelete = () => {
+    if (!undo) return;
+    const { group, index, task } = undo;
+    setGroups(prev => {
+      const grp = prev[group] ? { ...prev[group] } : { items: [] };
+      grp.items = [
+        ...grp.items.slice(0, index),
+        task,
+        ...grp.items.slice(index)
+      ];
+      return { ...prev, [group]: grp };
+    });
+    setUndo(null);
     setTimeout(checkAll, 0);
   };
 
@@ -278,7 +297,18 @@ function App() {
           });
         })
       )
-    )
+    ),
+    undo &&
+      React.createElement(
+        'div',
+        { className: 'mt-4 flex items-center gap-2' },
+        React.createElement('span', null, 'Task deleted.'),
+        React.createElement(
+          'button',
+          { onClick: undoDelete, className: 'text-blue-600 underline' },
+          'Undo'
+        )
+      )
   );
 }
 
