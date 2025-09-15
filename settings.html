@@ -1,54 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Settings - Jav Trainer</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@^3/dist/tailwind.min.css" rel="stylesheet" />
-</head>
-<body class="bg-gray-100 text-gray-900 font-sans">
-  <!-- Header -->
-  <header class="sticky top-0 z-10 bg-white flex items-center justify-between shadow p-4">
-    <a href="index.html" class="text-xl font-bold hover:text-blue-600">⬅️</a>
-    <h1 class="font-bold text-lg text-center flex-1">Settings</h1>
-  </header>
-
-  <main class="p-6 space-y-6 max-w-5xl mx-auto">
-    <!-- Workout Types -->
-    <div class="bg-white rounded-xl shadow p-5 space-y-4">
-      <div class="flex items-center justify-between">
-        <h2 class="font-semibold text-xl text-gray-800">Workout Library</h2>
-        <button id="reset-config" class="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600">
-          Reset to Default
-        </button>
-      </div>
-      <p class="text-sm text-gray-600">Create workout types (e.g. Gym, WOD, Mobility, Javelin). Inside each type, add workouts with a title and one exercise per line.</p>
-      <div id="workout-types" class="space-y-4"></div>
-      <button id="add-type-btn"
-        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-        + Add Workout Type
-      </button>
-    </div>
-
-    <!-- Weekly Split -->
-    <div class="bg-white rounded-xl shadow p-5 space-y-4">
-      <h2 class="font-semibold text-xl text-gray-800">Weekly Schedule</h2>
-      <p class="text-sm text-gray-600">Assign fixed workouts or let a slot randomly pick from a workout type.</p>
-      <div id="weekly-split" class="grid gap-4 md:grid-cols-2"></div>
-      <button id="save-schedule-btn"
-        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors">
-        Save Schedule
-      </button>
-    </div>
-  </main>
-
-  <script src="settings.js"></script>
-  <script>
-    // Reset button logic (force seed on next load)
-    document.getElementById('reset-config').onclick = () => {
-      localStorage.removeItem('workoutConfig');
-      location.reload();
-    };
-  </script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Settings - Jav Trainer</title>
+    <link rel="stylesheet" href="./tailwind.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+  <body class="font-sans bg-gray-100 text-[#4F4F4F]">
+    <header class="flex items-center p-4 border-b">
+      <a href="index.html" class="mr-2"><i data-lucide="arrow-left" class="w-5 h-5"></i></a>
+      <h1 class="text-xl font-bold flex-1">Settings</h1>
+    </header>
+    <main id="workout-editor" class="p-4 space-y-4"></main>
+    <script src="./settings.js"></script>
+  </body>
 </html>
