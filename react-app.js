@@ -55,6 +55,15 @@ function useStreakTracker() {
   const [lastDate, setLastDate] = usePersistentState('streakLastDate', null);
   const [history, setHistory] = usePersistentState('streakHistory', {});
   const markComplete = useCallback(() => {
+    if (lastDate === today) {
+      setHistory(prev => {
+        if (prev[today]) return prev;
+        const updated = { ...prev, [today]: true };
+        showStreakPopup(updated);
+        return updated;
+      });
+      return;
+    }
     const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
     const next = lastDate === yesterday ? streak + 1 : 1;
     setStreak(next);
@@ -159,18 +168,31 @@ function App() {
   };
 
   const deleteTask = (group, index) => {
-
-    const removed = groups[group]?.items[index];
-
+    let removedTask;
+    let didRemove = false;
     setGroups(prev => {
-      const grp = { ...prev[group] };
-      removed = grp.items[index];
-      grp.items = grp.items.filter((_, i) => i !== index);
-      const next = { ...prev, [group]: grp };
-      if (grp.items.length === 0) delete next[group];
+      const current = prev[group];
+      if (!current || !Array.isArray(current.items)) {
+        return prev;
+      }
+      const items = current.items;
+      if (index < 0 || index >= items.length) {
+        return prev;
+      }
+      removedTask = items[index];
+      didRemove = true;
+      const nextItems = items.filter((_, i) => i !== index);
+      const next = { ...prev };
+      if (nextItems.length) {
+        next[group] = { ...current, items: nextItems };
+      } else {
+        delete next[group];
+      }
       return next;
     });
-    setUndo({ group, index, task: removed });
+    if (didRemove) {
+      setUndo({ group, index, task: removedTask });
+    }
     setTimeout(checkAll, 0);
   };
 
